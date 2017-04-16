@@ -1,0 +1,7 @@
+FROM alpine:latest
+
+MAINTAINER Aliyun FunctionCompute
+
+RUN apk add --update bash zip && rm -rf /var/cache/apk/*
+
+WORKDIR /code
