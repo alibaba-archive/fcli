@@ -1,0 +1,532 @@
+#compdef fcli
+#autoload
+
+__fcli_arguments() {
+    if zstyle -T ":completion:${curcontext}:" option-stacking; then
+        print -- -s
+    fi
+}
+
+local -a _fcli_runtime_types
+_fcli_runtime_types=(
+	'python2.7'
+	'python3'
+	'nodejs6'
+	'java8'
+)
+
+
+local -a _fcli_help_args
+_fcli_help_args=(
+	'config\:"Configure the fcli"'
+	'function\:"function related operation"'
+	'help\:"Help about any command"'
+	'service\:"service related operation"'
+	'shell\:"interactive shell"'
+	'version\:"fcli version information"'
+)
+
+local -a _1st_arguments
+_1st_arguments=(
+	'config:Configure the fcli'
+	'function:function related operation'
+	'help:Help about any command'
+	'service:service related operation'
+	'shell:interactive shell'
+	'version:fcli version information'
+)
+
+local -a _fcli_function_args
+_fcli_function_args=(
+	'create:Create function'
+	'delete:Delete funtion'
+	'get:Get function'
+	'invoke:Invoke function'
+	'list:List functions belong to the specified service'
+	'logs:fetch the logs of a function'
+	'update:Update function attributes'
+)
+
+local -a _fcli_service_args
+_fcli_service_args=(
+	'create:create service'
+	'delete:Delete service'
+	'get:Get the information of service'
+	'list:List services of the current account'
+	'update:update service'
+)
+
+local -a _fcli_service_create_args
+_fcli_service_create_args=(
+	'--description\:"(string) service description"'
+	'--help\:" create service"'
+	'--log-project\:"(string) loghub project for logging"'
+	'--log-store\:"(string) loghub logstore for logging"'
+	'--role-arn\:"(string) role arn for oss code copy, function execution and logging"'
+	'--service-name\:"(string) the service name"'
+	'-s\:"(string) alias of --service-name, the service name"'
+)
+
+local -a _fcli_service_list_args
+_fcli_service_list_args=(
+	'--help\:" list functions"'
+	'--limit\:"(int32) the max number of the returned services (default 100)"'
+	'--name-only\:" display service name only (default true)"'
+	'--next-token\:"(string) continue listing the functions from the previous point"'
+	'--prefix\:"(string) list the services whose names contain the specified prefix"'
+	'--start-key\:"(string) start key is where you want to start listing from"'
+)
+
+local -a _fcli_service_delete_args
+_fcli_service_delete_args=(
+	'--etag\:"(string) provide etag to do the conditional delete. If the specified etag does not match the service, the delete will fail."'
+	'--help\:"delete service"'
+	'--service-name\:"(string) the service name"'
+	'-s\:"(string) alias of --service-name, the service name"'
+)
+
+local -a _fcli_service_get_args
+_fcli_service_get_args=(
+	'--help\:"Print Usage"'
+	'--service-name\:"(string) the service name"'
+	'-s\:"(string) alias of --service-name, the service name"'
+)
+
+local -a _fcli_service_update_args
+_fcli_service_update_args=(
+	'--description\:"(string) service brief description"'
+	'--etag\:"(string) provide etag to do the conditional update. If the specified etag does not match the service, the update will fail."'
+	'--help\:" Print Usage"'
+	'--log-project\:"(string) loghub project name for logging"'
+	'--log-store\:"(string) loghub logstore name for logging"'
+	'--role\:"(string) the arn of the service RAM role for code copy and logging"'
+	'--service-name\:"(string) the service name"'
+	'-s\:"(string) alias of --service-name, the service name"'
+)
+
+local -a _fcli_config_args
+_fcli_config_args=(
+	'--access-key-id\:"(string) access key id"'
+	'--access-key-secret\:"(string) access key secret"'
+	'--api-version\:"(string) fc api version (default \"2016-08-15\")"'
+	'--debug\:"enable debug or not"'
+	'--display\:"display the configuration"'
+	'--endpoint\:"(string) fc endpoint"'
+	'--help\:"set configuration"'
+	'--security-token\:"(string) ram security token"'
+	'--timeout\:"(uint) timeout in seconds (default 60)"'
+)
+
+
+local -a _fcli_function_create_args
+_fcli_function_create_args=(
+	'--code-bucket\:"(string) oss bucket of the code"'
+	'-b\:"(string) alias of --bucket, oss code bucket"'
+	'--code-dir\:"(string) function code directory. If both code-file and code-dir are provided, code-file will be used."'
+	'--code-file\:"(string) zipped code file. If both code-file and code-dir are provided, code-file will be used."'
+	'--code-object\:"(string) oss object of the code"'
+	'-o\:"(string) alias of --object, oss object of the code"'
+	'--description\:"(string) brief description"'
+	'--function-name\:"(string) the function name"'
+	'-f\:"(string) alias of --function-name, the function name"'
+	'--handler\:"(string) handler is the entrypoint for the function execution"'
+	'-h\:"(string) alias of --handler, handler is the entrypoint for the function execution"'
+	'--help\:""'
+	'--memory\:"(int32) memory size in MB (default 128)"'
+	'-m\:"(int32) alias of --memory, memory size in MB (default 128)"'
+	'--runtime\:"(string) function runtime"'
+	'-t\:"(string) alias of --runtime, function runtime"'
+	'--service-name\:"(string) the service name"'
+  	'-s\:"(string) alias of --service-name, the service name"'
+	'--timeout\:"(int32) timeout in seconds (default 30)"'
+)
+
+local -a _fcli_function_invoke_args
+_fcli_function_invoke_args=(
+	'--debug\:"debug mode"'
+	'--event-file\:"(string) invoke event in file with json format"'
+	'--event-str\:"(string) invoke event string"'
+	'--function-name\:"(string) function name"'
+	'-f\:"(string) alias of --function-name, the function name"'
+	'--invocation-type\:"(string) invocation type (default "Sync")"'
+	'--output\:"(string) output filename"'
+	'--service-name\:"(string) service name"'
+	'-s\:"(string) alias of --service-name, the service name"'
+	'--help\:"Invoke function"'
+)
+
+local -a _fcli_function_update_args
+_fcli_function_update_args=(
+	'--bucket\:"(string) oss code bucket"'
+	'-b\:"(string) alias of --bucket, oss code bucket"'
+	'--code-dir\:"(string) function code directory. If both code-file and code-dir are provided, code-file will be used."'
+	'--code-file\:"(string) zipped code file. If both code-file and code-dir are provided, code-file will be used."'
+	'--description\:"(string) function description"'
+	'-d\:"(string) alias of --description, function description"'
+	'--etag\:"(string) provide etag to do the conditional update. If the specified etag does not match the function, the update will fail."'
+	'--function-name\:"(string) the function name"'
+	'-f\:"(string) alias of --function-name, the function name"'
+	'--handler\:"(string) function handler"'
+	'-h\:"(string) alias of --handler, function handler"'
+	'--help\:" Print Usage"'
+	'--memory\:"(int32) memory size in MB"'
+	'-m\:"(int32) alias of --memory, memory size in MB"'
+	'--object\:"(string) oss code object"'
+	'-o\:"(string) alias of --object, oss code object"'
+	'--runtime\:"(string) function runtime"'
+	'-t\:"(string) alias of --runtime, function runtime"'
+	'--service-name\:"(string) the service name"'
+	'-s\:"(string) alias of --service-name, the service name"'
+	'--timeout\:"(int32) function timeout in seconds"'
+)
+
+local -a _fcli_function_logs_args
+_fcli_function_logs_args=(
+	'--end\:"(string) end time,   such as 2017-01-01T02:02:03Z"'
+	'--function-name\:"(string) function name"'
+	'-f\:"(string) alias of --function-name, the function name"'
+	'--help\:"Print Usage"'
+	'--service-name\:"(string) service name"'
+	'-s\:"(string) alias of --service-name, the service name"'
+	'--start\:"(string) start time, such as 2017-01-01T01:02:03Z"'
+)
+
+local -a _fcli_function_delete_args
+_fcli_function_delete_args=(
+	'--etag\:"(string) provide etag to do the conditional delete. If the specified etag does not match the function, the delete will fail."'
+	'--function-name\:"(string) the function name"'
+	'-f\:"(string) alias of --function-name, the function name"'
+	'--service-name\:"(string) the service name"'
+	'-s\:"(string) alias of --service-name, the service name"'
+)
+
+local -a _fcli_function_get_args
+_fcli_function_get_args=(
+	'--function-name\:"(string) the function name"'
+	'-f\:"(string) alias of --function-name, the function name"'
+	'--service-name\:"(string) the service name"'
+	'-s\:"(string) alias of --service-name, the service name"'
+	'--help\:"Print Usage"'
+)
+
+local -a _fcli_function_list_args
+_fcli_function_list_args=(
+	'--help\:"list functions"'
+	'--limit\:"(int32) the max number of the returned functions (default 100)"'
+	'--name-only\:"display function name only (default true)"'
+	'--next-token\:"(string) continue listing the functions from the previous point"'
+	'--prefix\:"(string) list the functions whose names contain the specified prefix"'
+	'--service-name\:"(string) list the functions belong to the specified service"'
+	'-s\:"(string) alias of --service-name, the service name"'
+	'--start-key\:"(string) start key is where you want to start listing from"'
+)
+
+function __fcli_dirs() {
+	find . -type d -depth 1 | sed 's:^./::'
+}
+
+function __fcli_get_cur_code_dir() {
+	local isFound="false"
+	for word in $words[@]; do
+		if [ "$isFound" = true ]; then
+			echo "$word"
+			break
+		fi
+		if [ "$word" = "--code-dir" ]; then
+			isFound=true
+		fi
+	done
+}
+
+function __fcli_handler_names() {
+	# handle python
+	cur_code_dir=$(__fcli_get_cur_code_dir)
+	if [ "x$cur_code_dir" != x ]; then
+		for f in $(find ${cur_code_dir}/ -depth 1 | grep '\.py$'); do
+			grep -H '^def\s\+\w\+(\w\+, \w\+):' $f | awk -F '[: (]' '{printf "%s.%s\n", $1, $3}' ;
+		done | sed 's:\.py\.:.:;s:[^/]*/::;s:^/::'
+	fi
+}
+
+function __fcli_get_all_service_name() {
+	local len=${#words[@]}
+	local last_word="$words[$CURRENT]"
+	fcli service list | grep '^[ ]\+"[^:]*",*$' | grep -o '[a-zA-Z0-9_\-]\+'
+	if [ x"$last_word" != x ]; then
+		fcli service list --prefix $last_word | grep '^[ ]\+"[^:]*",*$' | grep -o '[a-zA-Z0-9_\-]\+'
+	fi
+}
+
+function __fcli_get_cur_service_name() {
+	local isFound="false"
+	for word in $words[@]; do
+		if [ "$isFound" = true ]; then
+			echo "$word"
+			break
+		fi
+		if [ "$word" = "--service-name" ] || [ "$word" = '-s' ] ; then
+			isFound=true
+		fi
+	done
+}
+
+function __fcli_get_all_function_name() {
+	local service_name=$(__fcli_get_cur_service_name)
+	fcli function list --service-name "$service_name" | grep '^[ ]\+"[^:]*",*$' | grep -o '[a-zA-Z0-9_\-]\+'
+}
+
+function __fcli_service_delete() {
+	local len=${#words[@]}
+	local last_word="$words[((CURRENT-1))]"
+	case "$last_word" in 
+		"--service-name" | "-s")
+			_alternative "service:service name:($(__fcli_get_all_service_name))"
+			return
+			;;
+		*)
+		_alternative "args:custom arg:(($_fcli_service_delete_args))"
+		;;
+	esac
+}
+
+function __fcli_service_update() {
+	local len=${#words[@]}
+	local last_word="$words[((CURRENT-1))]"
+	case "$last_word" in 
+		"--service-name" | "-s")
+			_alternative "service:service name:($(__fcli_get_all_service_name))"
+			return
+			;;
+		*)
+		_alternative "args:custom arg:(($_fcli_service_update_args))"
+		;;
+	esac
+}
+
+function __fcli_service_get() {
+	local len=${#words[@]}
+	local last_word="$words[((CURRENT-1))]"
+	case "$last_word" in 
+		"--service-name" | "-s")
+			_alternative "service:service name:($(__fcli_get_all_service_name))"
+			return
+			;;
+		*)
+		_alternative "args:custom arg:(($_fcli_service_get_args))"
+		;;
+	esac
+}
+
+function __fcli_function_list() {
+	local len=${#words[@]}
+	local last_word="$words[((CURRENT-1))]"
+	case "$last_word" in 
+		"--service-name" | "-s")
+			_alternative "service:service name:($(__fcli_get_all_service_name))"
+			return
+			;;
+		*)
+		_alternative "args:custom arg:(($_fcli_function_list_args))"
+		;;
+	esac
+}
+
+function __fcli_function_logs() {
+	local len=${#words[@]}
+	local last_word="$words[((CURRENT-1))]"
+	case "$last_word" in 
+		"--service-name" | "-s")
+			_alternative "service:service name:($(__fcli_get_all_service_name))"
+			return
+			;;
+		"--function-name" | "-f")
+			_alternative "function:function name:($(__fcli_get_all_function_name))"
+			return
+			;;
+		*)
+		_alternative "args:custom arg:(($_fcli_function_logs_args))"
+		;;
+	esac
+}
+
+function __fcli_function_get() {
+	local len=${#words[@]}
+	local last_word="$words[((CURRENT-1))]"
+	case "$last_word" in 
+		"--service-name" | "-s")
+			_alternative "service:service name:($(__fcli_get_all_service_name))"
+			return
+			;;
+		"--function-name" | "-f")
+			_alternative "function:function name:($(__fcli_get_all_function_name))"
+			return
+			;;
+		*)
+		_alternative "args:custom arg:(($_fcli_function_get_args))"
+		;;
+	esac
+}
+
+function __fcli_function_delete() {
+	local len=${#words[@]}
+	local last_word="$words[((CURRENT-1))]"
+	case "$last_word" in 
+		"--service-name" | "-s")
+			_alternative "service:service name:($(__fcli_get_all_service_name))"
+			return
+			;;
+		"--function-name" | "-f")
+			_alternative "function:function name:($(__fcli_get_all_function_name))"
+			return
+			;;
+		*)
+		_alternative "args:custom arg:(($_fcli_function_delete_args))"
+		;;
+	esac
+}
+
+function __fcli_function_update() {
+	local len=${#words[@]}
+	local last_word="$words[((CURRENT-1))]"
+	case "$last_word" in 
+		"--service-name" | "-s")
+			_alternative "service:service name:($(__fcli_get_all_service_name))"
+			return
+			;;
+		"--function-name" | "-f")
+			_alternative "function:function name:($(__fcli_get_all_function_name))"
+			return
+			;;
+		"--code-dir")
+			_alternative "code_dir:code dir name:($(__fcli_dirs))"
+			return
+			;;
+		"--runtime" | "-t")
+			_alternative "code_dir:code dir name:(($_fcli_runtime_types))"
+			return
+			;;
+		"--handler" | "-h")
+			_alternative "file:filename:($(__fcli_handler_names))"
+			return
+			;;
+		*)
+		_alternative "args:custom arg:(($_fcli_function_update_args))"
+		;;
+	esac
+}
+
+function __fcli_function_invoke() {
+	local len=${#words[@]}
+	local last_word="$words[((CURRENT-1))]"
+	case "$last_word" in 
+		"--service-name" | "-s")
+			_alternative "service:service name:($(__fcli_get_all_service_name))"
+			return
+			;;
+		"--function-name" | "-f")
+			_alternative "function:function name:($(__fcli_get_all_function_name))"
+			return
+			;;
+		"--event-file")
+			_alternative "event_file:event file:($(ls))"
+			return
+			;;
+		"--invocation-type")
+			_alternative "invocation_type:invocation type:(Sync Async)"
+			return
+			;;
+		*)
+		_alternative "args:custom arg:(($_fcli_function_invoke_args))"
+		;;
+	esac
+}
+
+function __fcli_function_create() {
+	local len=${#words[@]}
+	local last_word="$words[((CURRENT-1))]"
+	case "$last_word" in 
+		"--service-name"|"-s")
+			_alternative "service:service name:($(__fcli_get_all_service_name))"
+			return
+			;;
+		"--code-dir")
+			_alternative "code_dir:code dir name:($(__fcli_dirs))"
+			return
+			;;
+		"--handler" | "-h")
+			_alternative "file:filename:($(__fcli_handler_names))"
+			return
+			;;
+		"--runtime" | "-t")
+			_alternative "code_dir:code dir name:(($_fcli_runtime_types))"
+			return
+			;;
+		*)
+		_alternative "args:custom arg:(($_fcli_function_create_args))"
+		;;
+	esac
+}
+
+function _fcli_main() {
+	if (( CURRENT == 2 )); then
+		_describe -t commands "fcli " _1st_arguments
+		return
+	elif (( CURRENT >= 3 )); then
+		if [ "$words[2]" = function ]; then
+			if (( CURRENT == 3)) ; then
+				_describe -t commands "fcli function " _fcli_function_args
+				return
+			fi
+
+			if [ "$words[3]" = create ]; then
+				__fcli_function_create
+				return
+			elif [ "$words[3]" = list ]; then
+				__fcli_function_list
+				return
+			elif [ "$words[3]" = delete ]; then
+				__fcli_function_delete
+				return
+			elif [ "$words[3]" = get ]; then
+				__fcli_function_get
+				return
+			elif [ "$words[3]" = invoke ]; then
+				__fcli_function_invoke
+				return
+			elif [ "$words[3]" = update ]; then
+				__fcli_function_update
+				return
+			elif [ "$words[3]" = logs ]; then
+				__fcli_function_logs
+				return
+			fi
+		elif [ "$words[2]" = service ]; then
+			if (( CURRENT == 3)) ; then
+				_describe -t commands "fcli service " _fcli_service_args
+				return
+			fi
+			if [ "$words[3]" = create ]; then
+				_alternative "args:custom arg:(($_fcli_service_create_args))"
+				return
+			elif [ "$words[3]" = list ]; then
+				_alternative "args:custom arg:(($_fcli_service_list_args))"
+				return
+			elif [ "$words[3]" = delete ]; then
+				__fcli_service_delete
+				return
+			elif [ "$words[3]" = get ]; then
+				__fcli_service_get
+				return
+			elif [ "$words[3]" = update ]; then
+				__fcli_service_update
+				return
+			fi
+		elif [ "$words[2]" = config ]; then
+			_alternative "args:custom arg:(($_fcli_config_args))"
+		elif [ "$words[2]" = help ]; then
+			_alternative "args:custom arg:(($_fcli_help_args))"
+		fi
+	fi
+}
+
+_fcli_main
