@@ -1,9 +1,11 @@
 # fcli
-The cli of function compute.
+The cli of function compute. 
 
-## auto complete under shell
+## [User manual](https://help.aliyun.com/document_detail/52995.html)
 
-### for bash
+## Auto complete under shell
+
+### bash
 
 run command as follows:
 
@@ -19,7 +21,7 @@ source misc/completion/fcli-completion.bash
 
 and then relogin
 
-### for zsh
+### zsh
 
 run command as follows:
 
