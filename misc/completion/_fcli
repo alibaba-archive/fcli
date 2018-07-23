@@ -33,6 +33,7 @@ _1st_arguments=(
 	'help:Help about any command'
 	'service:service related operation'
 	'shell:interactive shell'
+	'trigger: trigger related operation'
 	'version:fcli version information'
 )
 
@@ -219,6 +220,83 @@ _fcli_function_list_args=(
 	'--service-name\:"(string) list the functions belong to the specified service"'
 	'-s\:"(string) alias of --service-name, the service name"'
 	'--start-key\:"(string) start key is where you want to start listing from"'
+)
+
+local -a _fcli_trigger_args
+_fcli_trigger_args=(
+	'create:Create trigger'
+	'delete:Delete trigger'
+	'get:Get the information of trigger'
+	'list:List triggers'
+	'update:update trigger'
+)
+
+local -a _fcli_trigger_create_args
+_fcli_trigger_create_args=(
+	'--service-name\:"(string) the service name"'
+	'--function-name\:"(string) the function name"'
+	'--trigger-name\:"(string) the trigger name"'
+	'--type\:"(string) trigger type, support oss, log, timer, http, cdn_events"'
+	'--role\:"(string) invocation role,  timer trigger optional"'
+	'--source-arn\:"(string) event source arn,for example, acs:oss:cn-hangzhou:123456:bucket1.timer trigger optional"'
+	'--config\:"(string) trigger config file, support json and yaml format."'
+	'-s\:"(string) alias of --service-name, the service name"'
+	'-f\:"(string) alias of --function-name, the function name"'
+	'-t\:"(string) alias of --trigger-name, the trigger name"'
+	'-r\:"(string) alias of --role, the invocation role"'
+	'-a\:"(string) alias of --source-arn, the event source arn"'
+	'-c\:"(string) alias of --config, the trigger config file"'
+)
+
+local -a _fcli_trigger_update_args
+_fcli_trigger_update_args=(
+	'--service-name\:"(string) the service name"'
+	'--function-name\:"(string) the function name"'
+	'--trigger-name\:"(string) the trigger name"'
+	'--etag\:"(string) update with etag, you can get etag from GetTrigger call"'
+	'--invocation-role\:"(string) invocation role,  timer trigger optional"'
+	'--trigger-config\:"(string) trigger config file, support json and yaml format."'
+	'-s\:"(string) alias of --service-name, the service name"'
+	'-f\:"(string) alias of --function-name, the function name"'
+	'-t\:"(string) alias of --trigger-name, the trigger name"'
+)
+
+local -a _fcli_trigger_delete_args
+_fcli_trigger_delete_args=(
+	'--service-name\:"(string) the service name"'
+	'--function-name\:"(string) the function name"'
+	'--trigger-name\:"(string) the trigger name"'
+	'--etag\:"(string) update with etag, you can get etag from GetTrigger call"'
+	'-s\:"(string) alias of --service-name, the service name"'
+	'-f\:"(string) alias of --function-name, the function name"'
+	'-t\:"(string) alias of --trigger-name, the trigger name"'
+)
+
+local -a _fcli_trigger_get_args
+_fcli_trigger_get_args=(
+	'--service-name\:"(string) the service name"'
+	'--function-name\:"(string) the function name"'
+	'--trigger-name\:"(string) the trigger name"'
+	'-s\:"(string) alias of --service-name, the service name"'
+	'-f\:"(string) alias of --function-name, the function name"'
+	'-t\:"(string) alias of --trigger-name, the trigger name"'
+)
+
+local -a _fcli_trigger_list_args
+_fcli_trigger_list_args=(
+	'--service-name\:"(string) list the triggers belong to the specified service"'
+	'--function-name\:"(string) the function name"'
+	'--limit\:"(int32) the max number of the returned triggers (default 100)"'
+	'--next-token\:"(string) continue listing the triggers from the previous point"'
+	'--only-names\:"get all the trigger list but only show names"'
+	'--prefix\:"(string) list the triggers whose names contain the specified prefix"'
+	'--start-key\:"(string) start key is where you want to start listing from"'
+	'-s\:"(string) alias of --service-name, the service name"'
+	'-f\:"(string) alias of --function-name, the function name"'
+	'-l\:"(int32) alias of --limit, the max number of the returned triggers"'
+	'-n\:"(string) alias of --next-token, the next token"'
+	'-p\:"(string) alias of --prefix, the trigger prefix"'
+	'-k\:"(string) alias of --start-key, the trigger start key"'
 )
 
 function __fcli_dirs() {
@@ -519,6 +597,27 @@ function _fcli_main() {
 				return
 			elif [ "$words[3]" = update ]; then
 				__fcli_service_update
+				return
+			fi
+		elif [ "$words[2]" = trigger ]; then
+			if (( CURRENT == 3)) ; then
+				_describe -t commands "fcli trigger " _fcli_trigger_args
+				return
+			fi
+			if [ "$words[3]" = create ]; then
+				_alternative "args:custom arg:(($_fcli_trigger_create_args))"
+				return
+			elif [ "$words[3]" = list ]; then
+				_alternative "args:custom arg:(($_fcli_trigger_list_args))"
+				return
+			elif [ "$words[3]" = delete ]; then
+				__fcli_trigger_delete
+				return
+			elif [ "$words[3]" = get ]; then
+				__fcli_trigger_get
+				return
+			elif [ "$words[3]" = update ]; then
+				__fcli_trigger_update
 				return
 			fi
 		elif [ "$words[2]" = config ]; then
