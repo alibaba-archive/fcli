@@ -1,4 +1,5 @@
 _fcli_runtime_types="python2.7 python3 nodejs6 nodejs6 java8"
+_fcli_trigger_types="oss log timer http cdn_events"
 _fcli_sub_command="config function help service shell trigger version"
 _fcli_config_args="--access-key-id --access-key-secret --api-version --debug --display --endpoint --help --security-token --timeout"
 
@@ -346,7 +347,25 @@ function _fcli() {
 				f_cmd=${COMP_WORDS[2]}
 				case "$f_cmd" in 
 					create)
-						opts="$(__fcli_remove_exist_args ${_fcli_trigger_create_args})"
+						local opts
+						case $prev in 
+							--service-name|-s)
+								opts="$(__fcli_get_all_service_name)"
+								;;
+							--function-name|-f)
+								opts="$(__fcli_get_all_function_name)"
+								;;
+							--type)
+								opts="$_fcli_trigger_types"
+								;;
+							--config|-c)
+								opts="$(__fcli_dirs)"
+								;;
+							*)
+								opts="$_fcli_trigger_create_args"
+								;;
+						esac
+						opts="$(__fcli_remove_exist_args $opts)"
 						COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
 						return 0
 						;;
@@ -354,7 +373,16 @@ function _fcli() {
 						local opts
 						case $prev in 
 							--service-name|-s)
+								opts="$(__fcli_get_all_service_name)"
+								;;
+							--function-name|-f)
+								opts="$(__fcli_get_all_function_name)"
+								;;
+							--trigger-name|-f)
 								opts="$(__fcli_get_all_trigger_name)"
+								;;
+							--trigger-config)
+								opts="$(__fcli_dirs)"
 								;;
 							*)
 								opts="$_fcli_trigger_update_args"
@@ -368,7 +396,10 @@ function _fcli() {
 						local opts
 						case $prev in 
 							--service-name|-s)
-								opts="$(__fcli_get_all_trigger_name)"
+								opts="$(__fcli_get_all_service_name)"
+								;;
+							--function-name|-f)
+								opts="$(__fcli_get_all_function_name)"
 								;;
 							*)
 								opts="$_fcli_trigger_list_args"
@@ -382,6 +413,12 @@ function _fcli() {
 						local opts
 						case $prev in 
 							--service-name|-s)
+								opts="$(__fcli_get_all_service_name)"
+								;;
+							--function-name|-f)
+								opts="$(__fcli_get_all_function_name)"
+								;;
+							--trigger-name|-f)
 								opts="$(__fcli_get_all_trigger_name)"
 								;;
 							*)
@@ -396,6 +433,12 @@ function _fcli() {
 						local opts
 						case $prev in 
 							--service-name|-s)
+								opts="$(__fcli_get_all_service_name)"
+								;;
+							--function-name|-f)
+								opts="$(__fcli_get_all_function_name)"
+								;;
+							--trigger-name|-f)
 								opts="$(__fcli_get_all_trigger_name)"
 								;;
 							*)
