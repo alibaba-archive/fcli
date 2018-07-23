@@ -12,9 +12,18 @@ _fcli_runtime_types=(
 	'python2.7'
 	'python3'
 	'nodejs6'
+	'nodejs8'
 	'java8'
 )
 
+local -a _fcli_trigger_types
+_fcli_trigger_types=(
+	'oss'
+	'log'
+	'timer'
+	'http'
+	'cdn_events'
+)
 
 local -a _fcli_help_args
 _fcli_help_args=(
@@ -348,9 +357,48 @@ function __fcli_get_cur_service_name() {
 	done
 }
 
+function __fcli_get_cur_function_name() {
+	local isFound="false"
+	for word in $words[@]; do
+		if [ "$isFound" = true ]; then
+			echo "$word"
+			break
+		fi
+		if [ "$word" = "--function-name" ] || [ "$word" = '-f' ] ; then
+			isFound=true
+		fi
+	done
+}
+
+function __fcli_get_cur_trigger_name() {
+	local isFound="false"
+	for word in $words[@]; do
+		if [ "$isFound" = true ]; then
+			echo "$word"
+			break
+		fi
+		if [ "$word" = "--trigger-name" ] || [ "$word" = '-t' ] ; then
+			isFound=true
+		fi
+	done
+}
+
 function __fcli_get_all_function_name() {
 	local service_name=$(__fcli_get_cur_service_name)
 	fcli function list --service-name "$service_name" | grep '^[ ]\+"[^:]*",*$' | grep -o '[a-zA-Z0-9_\-]\+'
+}
+
+function __fcli_get_all_trigger_name() {
+	local service_name=$(__fcli_get_cur_service_name)
+	local function_name=$(__fcli_get_cur_function_name)
+	fcli trigger list --service-name "$service_name" --function-name "$function_name" --only-names | grep -o '[a-zA-Z0-9_\-]\+'
+}
+
+function __fcli_get_all_etags() {
+	local service_name=$(__fcli_get_cur_service_name)
+	local function_name=$(__fcli_get_cur_function_name)
+	local trigger_name=$(__fcli_get_cur_trigger_name)
+	fcli trigger get --service-name housing --function-name vnwork --trigger-name sevenMorning | grep -A1 '"Etag": \[' | tail -1 | grep -o '[a-zA-Z0-9_\-]\+'
 }
 
 function __fcli_service_delete() {
@@ -523,7 +571,7 @@ function __fcli_function_create() {
 	local len=${#words[@]}
 	local last_word="$words[((CURRENT-1))]"
 	case "$last_word" in 
-		"--service-name"|"-s")
+		"--service-name" | "-s")
 			_alternative "service:service name:($(__fcli_get_all_service_name))"
 			return
 			;;
@@ -542,6 +590,120 @@ function __fcli_function_create() {
 		*)
 		_alternative "args:custom arg:(($_fcli_function_create_args))"
 		;;
+	esac
+}
+
+function __fcli_trigger_create() {
+	local len=${#words[@]}
+	local last_word="$words[((CURRENT-1))]"
+	case "$last_word" in 
+		"--service-name" | "-s")
+			_alternative "service:service name:($(__fcli_get_all_service_name))"
+			return
+			;;
+		"--function-name" | "-f")
+			_alternative "function:function name:($(__fcli_get_all_function_name))"
+			return
+			;;
+		"--type")
+			_alternative "code_dir:code dir name:(($_fcli_trigger_types))"
+			return
+			;;
+		"--config" | "-c")
+			_alternative "code_dir:code dir name:($(__fcli_dirs))"
+			return
+			;;
+		*)
+			_alternative "args:custom arg:(($_fcli_trigger_create_args))"
+			;;
+	esac
+}
+
+function __fcli_trigger_update() {
+	local len=${#words[@]}
+	local last_word="$words[((CURRENT-1))]"
+	case "$last_word" in 
+		"--service-name" | "-s")
+			_alternative "service:service name:($(__fcli_get_all_service_name))"
+			return
+			;;
+		"--function-name" | "-f")
+			_alternative "function:function name:($(__fcli_get_all_function_name))"
+			return
+			;;
+		"--trigger-name" | "-t")
+			_alternative "function:function name:($(__fcli_get_all_trigger_name))"
+			return
+			;;
+		"--trigger-config")
+			_alternative "code_dir:code dir name:($(__fcli_dirs))"
+			return
+			;;
+		*)
+			_alternative "args:custom arg:(($_fcli_trigger_update_args))"
+			;;
+	esac
+}
+
+function __fcli_trigger_delete() {
+	local len=${#words[@]}
+	local last_word="$words[((CURRENT-1))]"
+	case "$last_word" in 
+		"--service-name" | "-s")
+			_alternative "service:service name:($(__fcli_get_all_service_name))"
+			return
+			;;
+		"--function-name" | "-f")
+			_alternative "function:function name:($(__fcli_get_all_function_name))"
+			return
+			;;
+		"--trigger-name" | "-t")
+			_alternative "function:function name:($(__fcli_get_all_trigger_name))"
+			return
+			;;
+		*)
+			_alternative "args:custom arg:(($_fcli_trigger_delete_args))"
+			;;
+	esac
+}
+
+function __fcli_trigger_get() {
+	local len=${#words[@]}
+	local last_word="$words[((CURRENT-1))]"
+	case "$last_word" in 
+		"--service-name" | "-s")
+			_alternative "service:service name:($(__fcli_get_all_service_name))"
+			return
+			;;
+		"--function-name" | "-f")
+			_alternative "function:function name:($(__fcli_get_all_function_name))"
+			return
+			;;
+		"--trigger-name" | "-t")
+			_alternative "function:function name:($(__fcli_get_all_trigger_name))"
+			return
+			;;
+		*)
+			_alternative "args:custom arg:(($_fcli_trigger_get_args))"
+			;;
+	esac
+}
+
+function __fcli_trigger_list() {
+	local len=${#words[@]}
+	local last_word="$words[((CURRENT-1))]"
+	case "$last_word" in 
+		"--service-name" | "-s")
+			_alternative "service:service name:($(__fcli_get_all_service_name))"
+			return
+			;;
+		"--function-name" | "-f")
+			_alternative "function:function name:($(__fcli_get_all_function_name))"
+			return
+			;;
+		*)
+			_alternative "args:custom arg:(($_fcli_trigger_list_args))"
+			;;
 	esac
 }
 
@@ -605,10 +767,10 @@ function _fcli_main() {
 				return
 			fi
 			if [ "$words[3]" = create ]; then
-				_alternative "args:custom arg:(($_fcli_trigger_create_args))"
+				__fcli_trigger_create
 				return
 			elif [ "$words[3]" = list ]; then
-				_alternative "args:custom arg:(($_fcli_trigger_list_args))"
+				__fcli_trigger_list
 				return
 			elif [ "$words[3]" = delete ]; then
 				__fcli_trigger_delete
