@@ -1,4 +1,4 @@
-_fcli_runtime_types="python2.7 python3 nodejs6 nodejs6 java8"
+_fcli_runtime_types="python2.7 python3 nodejs6 nodejs8 java8"
 _fcli_trigger_types="oss log timer http cdn_events"
 _fcli_sub_command="config function help service shell trigger version"
 _fcli_config_args="--access-key-id --access-key-secret --api-version --debug --display --endpoint --help --security-token --timeout"
