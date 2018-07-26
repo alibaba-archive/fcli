@@ -32,6 +32,7 @@ _fcli_help_args=(
 	'help\:"Help about any command"'
 	'service\:"service related operation"'
 	'shell\:"interactive shell"'
+	'trigger\:"trigger related operation"'
 	'version\:"fcli version information"'
 )
 

@@ -378,7 +378,7 @@ function _fcli() {
 							--function-name|-f)
 								opts="$(__fcli_get_all_function_name)"
 								;;
-							--trigger-name|-f)
+							--trigger-name|-t)
 								opts="$(__fcli_get_all_trigger_name)"
 								;;
 							--trigger-config)
@@ -418,7 +418,7 @@ function _fcli() {
 							--function-name|-f)
 								opts="$(__fcli_get_all_function_name)"
 								;;
-							--trigger-name|-f)
+							--trigger-name|-t)
 								opts="$(__fcli_get_all_trigger_name)"
 								;;
 							*)
@@ -438,7 +438,7 @@ function _fcli() {
 							--function-name|-f)
 								opts="$(__fcli_get_all_function_name)"
 								;;
-							--trigger-name|-f)
+							--trigger-name|-t)
 								opts="$(__fcli_get_all_trigger_name)"
 								;;
 							*)
