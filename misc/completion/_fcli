@@ -12,9 +12,18 @@ _fcli_runtime_types=(
 	'python2.7'
 	'python3'
 	'nodejs6'
+	'nodejs8'
 	'java8'
 )
 
+local -a _fcli_trigger_types
+_fcli_trigger_types=(
+	'oss'
+	'log'
+	'timer'
+	'http'
+	'cdn_events'
+)
 
 local -a _fcli_help_args
 _fcli_help_args=(
@@ -23,6 +32,7 @@ _fcli_help_args=(
 	'help\:"Help about any command"'
 	'service\:"service related operation"'
 	'shell\:"interactive shell"'
+	'trigger\:"trigger related operation"'
 	'version\:"fcli version information"'
 )
 
@@ -33,6 +43,7 @@ _1st_arguments=(
 	'help:Help about any command'
 	'service:service related operation'
 	'shell:interactive shell'
+	'trigger: trigger related operation'
 	'version:fcli version information'
 )
 
@@ -221,6 +232,83 @@ _fcli_function_list_args=(
 	'--start-key\:"(string) start key is where you want to start listing from"'
 )
 
+local -a _fcli_trigger_args
+_fcli_trigger_args=(
+	'create:Create trigger'
+	'delete:Delete trigger'
+	'get:Get the information of trigger'
+	'list:List triggers'
+	'update:update trigger'
+)
+
+local -a _fcli_trigger_create_args
+_fcli_trigger_create_args=(
+	'--service-name\:"(string) the service name"'
+	'--function-name\:"(string) the function name"'
+	'--trigger-name\:"(string) the trigger name"'
+	'--type\:"(string) trigger type, support oss, log, timer, http, cdn_events"'
+	'--role\:"(string) invocation role,  timer trigger optional"'
+	'--source-arn\:"(string) event source arn,for example, acs:oss:cn-hangzhou:123456:bucket1.timer trigger optional"'
+	'--config\:"(string) trigger config file, support json and yaml format."'
+	'-s\:"(string) alias of --service-name, the service name"'
+	'-f\:"(string) alias of --function-name, the function name"'
+	'-t\:"(string) alias of --trigger-name, the trigger name"'
+	'-r\:"(string) alias of --role, the invocation role"'
+	'-a\:"(string) alias of --source-arn, the event source arn"'
+	'-c\:"(string) alias of --config, the trigger config file"'
+)
+
+local -a _fcli_trigger_update_args
+_fcli_trigger_update_args=(
+	'--service-name\:"(string) the service name"'
+	'--function-name\:"(string) the function name"'
+	'--trigger-name\:"(string) the trigger name"'
+	'--etag\:"(string) update with etag, you can get etag from GetTrigger call"'
+	'--invocation-role\:"(string) invocation role,  timer trigger optional"'
+	'--trigger-config\:"(string) trigger config file, support json and yaml format."'
+	'-s\:"(string) alias of --service-name, the service name"'
+	'-f\:"(string) alias of --function-name, the function name"'
+	'-t\:"(string) alias of --trigger-name, the trigger name"'
+)
+
+local -a _fcli_trigger_delete_args
+_fcli_trigger_delete_args=(
+	'--service-name\:"(string) the service name"'
+	'--function-name\:"(string) the function name"'
+	'--trigger-name\:"(string) the trigger name"'
+	'--etag\:"(string) update with etag, you can get etag from GetTrigger call"'
+	'-s\:"(string) alias of --service-name, the service name"'
+	'-f\:"(string) alias of --function-name, the function name"'
+	'-t\:"(string) alias of --trigger-name, the trigger name"'
+)
+
+local -a _fcli_trigger_get_args
+_fcli_trigger_get_args=(
+	'--service-name\:"(string) the service name"'
+	'--function-name\:"(string) the function name"'
+	'--trigger-name\:"(string) the trigger name"'
+	'-s\:"(string) alias of --service-name, the service name"'
+	'-f\:"(string) alias of --function-name, the function name"'
+	'-t\:"(string) alias of --trigger-name, the trigger name"'
+)
+
+local -a _fcli_trigger_list_args
+_fcli_trigger_list_args=(
+	'--service-name\:"(string) list the triggers belong to the specified service"'
+	'--function-name\:"(string) the function name"'
+	'--limit\:"(int32) the max number of the returned triggers (default 100)"'
+	'--next-token\:"(string) continue listing the triggers from the previous point"'
+	'--only-names\:"get all the trigger list but only show names"'
+	'--prefix\:"(string) list the triggers whose names contain the specified prefix"'
+	'--start-key\:"(string) start key is where you want to start listing from"'
+	'-s\:"(string) alias of --service-name, the service name"'
+	'-f\:"(string) alias of --function-name, the function name"'
+	'-l\:"(int32) alias of --limit, the max number of the returned triggers"'
+	'-n\:"(string) alias of --next-token, the next token"'
+	'-p\:"(string) alias of --prefix, the trigger prefix"'
+	'-k\:"(string) alias of --start-key, the trigger start key"'
+)
+
 function __fcli_dirs() {
 	find . -type d -depth 1 | sed 's:^./::'
 }
@@ -270,9 +358,48 @@ function __fcli_get_cur_service_name() {
 	done
 }
 
+function __fcli_get_cur_function_name() {
+	local isFound="false"
+	for word in $words[@]; do
+		if [ "$isFound" = true ]; then
+			echo "$word"
+			break
+		fi
+		if [ "$word" = "--function-name" ] || [ "$word" = '-f' ] ; then
+			isFound=true
+		fi
+	done
+}
+
+function __fcli_get_cur_trigger_name() {
+	local isFound="false"
+	for word in $words[@]; do
+		if [ "$isFound" = true ]; then
+			echo "$word"
+			break
+		fi
+		if [ "$word" = "--trigger-name" ] || [ "$word" = '-t' ] ; then
+			isFound=true
+		fi
+	done
+}
+
 function __fcli_get_all_function_name() {
 	local service_name=$(__fcli_get_cur_service_name)
 	fcli function list --service-name "$service_name" | grep '^[ ]\+"[^:]*",*$' | grep -o '[a-zA-Z0-9_\-]\+'
+}
+
+function __fcli_get_all_trigger_name() {
+	local service_name=$(__fcli_get_cur_service_name)
+	local function_name=$(__fcli_get_cur_function_name)
+	fcli trigger list --service-name "$service_name" --function-name "$function_name" --only-names | grep -o '[a-zA-Z0-9_\-]\+'
+}
+
+function __fcli_get_all_etags() {
+	local service_name=$(__fcli_get_cur_service_name)
+	local function_name=$(__fcli_get_cur_function_name)
+	local trigger_name=$(__fcli_get_cur_trigger_name)
+	fcli trigger get --service-name housing --function-name vnwork --trigger-name sevenMorning | grep -A1 '"Etag": \[' | tail -1 | grep -o '[a-zA-Z0-9_\-]\+'
 }
 
 function __fcli_service_delete() {
@@ -445,7 +572,7 @@ function __fcli_function_create() {
 	local len=${#words[@]}
 	local last_word="$words[((CURRENT-1))]"
 	case "$last_word" in 
-		"--service-name"|"-s")
+		"--service-name" | "-s")
 			_alternative "service:service name:($(__fcli_get_all_service_name))"
 			return
 			;;
@@ -464,6 +591,120 @@ function __fcli_function_create() {
 		*)
 		_alternative "args:custom arg:(($_fcli_function_create_args))"
 		;;
+	esac
+}
+
+function __fcli_trigger_create() {
+	local len=${#words[@]}
+	local last_word="$words[((CURRENT-1))]"
+	case "$last_word" in 
+		"--service-name" | "-s")
+			_alternative "service:service name:($(__fcli_get_all_service_name))"
+			return
+			;;
+		"--function-name" | "-f")
+			_alternative "function:function name:($(__fcli_get_all_function_name))"
+			return
+			;;
+		"--type")
+			_alternative "code_dir:code dir name:(($_fcli_trigger_types))"
+			return
+			;;
+		"--config" | "-c")
+			_alternative "code_dir:code dir name:($(__fcli_dirs))"
+			return
+			;;
+		*)
+			_alternative "args:custom arg:(($_fcli_trigger_create_args))"
+			;;
+	esac
+}
+
+function __fcli_trigger_update() {
+	local len=${#words[@]}
+	local last_word="$words[((CURRENT-1))]"
+	case "$last_word" in 
+		"--service-name" | "-s")
+			_alternative "service:service name:($(__fcli_get_all_service_name))"
+			return
+			;;
+		"--function-name" | "-f")
+			_alternative "function:function name:($(__fcli_get_all_function_name))"
+			return
+			;;
+		"--trigger-name" | "-t")
+			_alternative "function:function name:($(__fcli_get_all_trigger_name))"
+			return
+			;;
+		"--trigger-config")
+			_alternative "code_dir:code dir name:($(__fcli_dirs))"
+			return
+			;;
+		*)
+			_alternative "args:custom arg:(($_fcli_trigger_update_args))"
+			;;
+	esac
+}
+
+function __fcli_trigger_delete() {
+	local len=${#words[@]}
+	local last_word="$words[((CURRENT-1))]"
+	case "$last_word" in 
+		"--service-name" | "-s")
+			_alternative "service:service name:($(__fcli_get_all_service_name))"
+			return
+			;;
+		"--function-name" | "-f")
+			_alternative "function:function name:($(__fcli_get_all_function_name))"
+			return
+			;;
+		"--trigger-name" | "-t")
+			_alternative "function:function name:($(__fcli_get_all_trigger_name))"
+			return
+			;;
+		*)
+			_alternative "args:custom arg:(($_fcli_trigger_delete_args))"
+			;;
+	esac
+}
+
+function __fcli_trigger_get() {
+	local len=${#words[@]}
+	local last_word="$words[((CURRENT-1))]"
+	case "$last_word" in 
+		"--service-name" | "-s")
+			_alternative "service:service name:($(__fcli_get_all_service_name))"
+			return
+			;;
+		"--function-name" | "-f")
+			_alternative "function:function name:($(__fcli_get_all_function_name))"
+			return
+			;;
+		"--trigger-name" | "-t")
+			_alternative "function:function name:($(__fcli_get_all_trigger_name))"
+			return
+			;;
+		*)
+			_alternative "args:custom arg:(($_fcli_trigger_get_args))"
+			;;
+	esac
+}
+
+function __fcli_trigger_list() {
+	local len=${#words[@]}
+	local last_word="$words[((CURRENT-1))]"
+	case "$last_word" in 
+		"--service-name" | "-s")
+			_alternative "service:service name:($(__fcli_get_all_service_name))"
+			return
+			;;
+		"--function-name" | "-f")
+			_alternative "function:function name:($(__fcli_get_all_function_name))"
+			return
+			;;
+		*)
+			_alternative "args:custom arg:(($_fcli_trigger_list_args))"
+			;;
 	esac
 }
 
@@ -519,6 +760,27 @@ function _fcli_main() {
 				return
 			elif [ "$words[3]" = update ]; then
 				__fcli_service_update
+				return
+			fi
+		elif [ "$words[2]" = trigger ]; then
+			if (( CURRENT == 3)) ; then
+				_describe -t commands "fcli trigger " _fcli_trigger_args
+				return
+			fi
+			if [ "$words[3]" = create ]; then
+				__fcli_trigger_create
+				return
+			elif [ "$words[3]" = list ]; then
+				__fcli_trigger_list
+				return
+			elif [ "$words[3]" = delete ]; then
+				__fcli_trigger_delete
+				return
+			elif [ "$words[3]" = get ]; then
+				__fcli_trigger_get
+				return
+			elif [ "$words[3]" = update ]; then
+				__fcli_trigger_update
 				return
 			fi
 		elif [ "$words[2]" = config ]; then
