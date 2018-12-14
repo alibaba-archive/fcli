@@ -1,0 +1,15 @@
+language: go
+
+go:
+  - "1.11.x"
+
+before_install:
+  - go get github.com/Masterminds/glide
+  - go install github.com/Masterminds/glide
+  - glide i -v
+
+script:
+  - ./hack/validate-gofmt.sh
+  - ./hack/validate-golint.sh
+  - ./hack/validate-govet.sh
+  - ./hack/unit-test.sh

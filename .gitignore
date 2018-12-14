@@ -1,0 +1,11 @@
+afc
+config.ini
+bundles
+*.bak
+*.swp
+.idea/*
+.DS_Store
+vendor/*
+vendor
+.vscode/
+.oss_cfg
