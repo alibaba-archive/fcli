@@ -1660,7 +1660,7 @@ var shellCmd = &cobra.Command{
 			},
 		}
 
-		supportRuntimes := map[string]string{
+		supportedRuntimes := map[string]string{
 			"python2.7": "aliyunfc/runtime-python2.7:build",
 			"python3":   "aliyunfc/runtime-python3.6:build",
 			"nodejs6":   "aliyunfc/runtime-nodejs6:build",
@@ -1671,7 +1671,7 @@ var shellCmd = &cobra.Command{
 
 		getDockerCmdString := func(runtime string, codeDir string) (string, error) {
 
-			if v, ok := supportRuntimes[runtime]; ok {
+			if v, ok := supportedRuntimes[runtime]; ok {
 				return fmt.Sprintf(dockerRunFormat, codeDir, v), nil
 			}
 			return "", fmt.Errorf("invalid runtime: %s", runtime)
@@ -1687,8 +1687,8 @@ var shellCmd = &cobra.Command{
 				help := flags.Bool("help", false, "")
 				codeDir := flags.StringP("code-dir", "d", "", "the code directory")
 
-				supportedRuntimeKeys := make([]string, 0, len(supportRuntimes))
-				for k := range supportRuntimes {
+				supportedRuntimeKeys := make([]string, 0, len(supportedRuntimes))
+				for k := range supportedRuntimes {
 					supportedRuntimeKeys = append(supportedRuntimeKeys, k)
 				}
 				runtimeSupportStr := strings.Join(supportedRuntimeKeys, ", ")
