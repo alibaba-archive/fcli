@@ -1693,7 +1693,7 @@ var shellCmd = &cobra.Command{
 				}
 				runtimeSupportStr := strings.Join(runtimeSupportKeys, ", ")
 
-				runtime := flags.StringP("runtime", "t", "", "supported runtime value:  "+runtimeSupportStr)
+				runtime := flags.StringP("runtime", "t", "", "supported runtimes :  "+runtimeSupportStr)
 				err := flags.Parse(c.Args)
 				if err != nil {
 					c.Err(err)
