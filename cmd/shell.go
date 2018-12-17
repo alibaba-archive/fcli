@@ -1691,9 +1691,9 @@ var shellCmd = &cobra.Command{
 				for k := range supportedRuntimes {
 					supportedRuntimeKeys = append(supportedRuntimeKeys, k)
 				}
-				runtimeSupportStr := strings.Join(supportedRuntimeKeys, ", ")
+				supportedRuntimeStr := strings.Join(supportedRuntimeKeys, ", ")
 
-				runtime := flags.StringP("runtime", "t", "", "supported runtimes :  "+runtimeSupportStr)
+				runtime := flags.StringP("runtime", "t", "", "supported runtimes :  "+supportedRuntimeStr)
 				err := flags.Parse(c.Args)
 				if err != nil {
 					c.Err(err)
