@@ -1660,15 +1660,17 @@ var shellCmd = &cobra.Command{
 			},
 		}
 
+		supportRuntimes := map[string]string{
+			"python2.7": "aliyunfc/runtime-python2.7:build",
+			"python3":   "aliyunfc/runtime-python3.6:build",
+			"nodejs6":   "aliyunfc/runtime-nodejs6:build",
+			"nodejs8":   "aliyunfc/runtime-nodejs8:build",
+			"java8":     "aliyunfc/runtime-java8:build",
+			"php7.2":    "aliyunfc/runtime-php7.2:build",
+		}
+
 		getDockerCmdString := func(runtime string, codeDir string) (string, error) {
-			supportRuntimes := map[string]string{
-				"python2.7": "aliyunfc/runtime-python2.7:build",
-				"python3":   "aliyunfc/runtime-python3.6:build",
-				"nodejs6":   "aliyunfc/runtime-nodejs6:build",
-				"nodejs8":   "aliyunfc/runtime-nodejs8:build",
-				"java8":     "aliyunfc/runtime-java8:build",
-				"php7.2":    "aliyunfc/runtime-php7.2:build",
-			}
+
 			if v, ok := supportRuntimes[runtime]; ok {
 				return fmt.Sprintf(dockerRunFormat, codeDir, v), nil
 			}
@@ -1684,7 +1686,14 @@ var shellCmd = &cobra.Command{
 				flags := pflag.NewFlagSet("config", pflag.ContinueOnError)
 				help := flags.Bool("help", false, "")
 				codeDir := flags.StringP("code-dir", "d", "", "the code directory")
-				runtime := flags.StringP("runtime", "t", "", "the function compute runtime")
+
+				runtimeSupportKeys := make([]string, 0, len(supportRuntimes))
+				for k := range supportRuntimes {
+					runtimeSupportKeys = append(runtimeSupportKeys, k)
+				}
+				runtimeSupportStr := strings.Join(runtimeSupportKeys, ", ")
+
+				runtime := flags.StringP("runtime", "t", "", "supported runtime value:  "+runtimeSupportStr)
 				err := flags.Parse(c.Args)
 				if err != nil {
 					c.Err(err)
