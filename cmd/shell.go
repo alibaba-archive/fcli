@@ -1687,11 +1687,11 @@ var shellCmd = &cobra.Command{
 				help := flags.Bool("help", false, "")
 				codeDir := flags.StringP("code-dir", "d", "", "the code directory")
 
-				runtimeSupportKeys := make([]string, 0, len(supportRuntimes))
+				supportedRuntimeKeys := make([]string, 0, len(supportRuntimes))
 				for k := range supportRuntimes {
-					runtimeSupportKeys = append(runtimeSupportKeys, k)
+					supportedRuntimeKeys = append(supportedRuntimeKeys, k)
 				}
-				runtimeSupportStr := strings.Join(runtimeSupportKeys, ", ")
+				runtimeSupportStr := strings.Join(supportedRuntimeKeys, ", ")
 
 				runtime := flags.StringP("runtime", "t", "", "supported runtimes :  "+runtimeSupportStr)
 				err := flags.Parse(c.Args)
