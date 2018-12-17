@@ -1,0 +1,123 @@
+hash: 7936af80b64f6bbcad194d08b69102819d8ef3cd940db00fd5ec122d58307aea
+updated: 2018-12-14T14:09:11.9245+08:00
+imports:
+- name: github.com/abiosoft/ishell
+  version: d2bd206ead0ec66d7b0f68c138a5d2f7cf600180
+- name: github.com/abiosoft/readline
+  version: 155bce2042db95a783081fab225e74dd879055b0
+- name: github.com/aliyun/aliyun-log-go-sdk
+  version: 0402edd803e987675a1f88f1cb80bfa006e7e28e
+- name: github.com/aliyun/fc-go-sdk
+  version: cf2b859441107dcac656c188641a42891a514b12
+- name: github.com/alyu/configparser
+  version: c505e6011694d3c8c1accccea3c9f57eef22afb1
+- name: github.com/denisbrodbeck/machineid
+  version: e2e48f90c87f1f77286682531a46ff99e95d8089
+- name: github.com/fatih/color
+  version: 3f9d52f7176a6927daacff70a3e8d1dc2025c53e
+- name: github.com/flynn-archive/go-shlex
+  version: 3f9db97f856818214da2e1057f8ad84803971cff
+- name: github.com/fsnotify/fsnotify
+  version: ccc981bf80385c528a65fbfdd49bf2d8da22aa23
+- name: github.com/go-resty/resty
+  version: c45c7bcc0000d1a9ac1b119b2e6043c6540eedea
+- name: github.com/gogo/protobuf
+  version: 4cbf7e384e768b4e01799441fdf2a706a5635ae7
+  subpackages:
+  - gogoproto
+  - proto
+  - protoc-gen-gogo/descriptor
+- name: github.com/golang/glog
+  version: 23def4e6c14b4da8ac2ed8007337bc5eb5007998
+- name: github.com/golang/protobuf
+  version: 1d3f30b51784bec5aad268e59fd3c2fc1c2fe73f
+  subpackages:
+  - proto
+- name: github.com/hashicorp/hcl
+  version: 65a6292f0157eff210d03ed1bf6c59b190b8b906
+  subpackages:
+  - hcl/ast
+  - hcl/parser
+  - hcl/printer
+  - hcl/scanner
+  - hcl/strconv
+  - hcl/token
+  - json/parser
+  - json/scanner
+  - json/token
+- name: github.com/inconshreveable/mousetrap
+  version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
+- name: github.com/kballard/go-shellquote
+  version: 95032a82bc518f77982ea72343cc1ade730072f0
+- name: github.com/magiconair/properties
+  version: 7c38529aac7222391b7a2661365177a97e21b998
+- name: github.com/mattn/go-colorable
+  version: efa589957cd060542a26d2dd7832fd6a6c6c3ade
+- name: github.com/mattn/go-isatty
+  version: 3fb116b820352b7f0c281308a4d6250c22d94e27
+- name: github.com/mgutz/ansi
+  version: 9520e82c474b0a04dd04f8a40959027271bab992
+- name: github.com/mitchellh/mapstructure
+  version: 3536a929edddb9a5b34bd6861dc4a9647cb459fe
+- name: github.com/pelletier/go-toml
+  version: 27c6b39a135b7dc87a14afb068809132fb7a9a8f
+- name: github.com/pierrec/lz4
+  version: 623b5a2f4d2a41e411730dcdfbfdaeb5c0c4564e
+  subpackages:
+  - internal/xxh32
+- name: github.com/satori/go.uuid
+  version: b2ce2384e17bbe0c6d34077efa39dbab3e09123b
+- name: github.com/spf13/afero
+  version: d40851caa0d747393da1ffb28f7f9d8b4eeffebd
+  subpackages:
+  - mem
+- name: github.com/spf13/cast
+  version: 8c9545af88b134710ab1cd196795e7f2388358d7
+- name: github.com/spf13/cobra
+  version: d2d81d9a96e23f0255397222bb0b4e3165e492dc
+- name: github.com/spf13/jwalterweatherman
+  version: 94f6ae3ed3bceceafa716478c5fbf8d29ca601a1
+- name: github.com/spf13/pflag
+  version: 916c5bf2d89aff6fd3e10e7811337218dfa81cb5
+- name: github.com/spf13/viper
+  version: 6d33b5a963d922d182c91e8a1c88d81fd150cfd4
+- name: golang.org/x/net
+  version: 891ebc4b82d6e74f468c533b06f983c7be918a96
+  subpackages:
+  - publicsuffix
+- name: golang.org/x/sys
+  version: 4d1cda033e0619309c606fc686de3adcf599539e
+  subpackages:
+  - unix
+  - windows
+  - windows/registry
+- name: golang.org/x/text
+  version: 17bcc049122f272a32787ba38073ee47433023e9
+  subpackages:
+  - transform
+  - unicode/norm
+- name: gopkg.in/AlecAivazis/survey.v1
+  version: e205523512c83e9236698dbe7eb9649ec56e80ca
+  subpackages:
+  - core
+  - terminal
+- name: gopkg.in/matryer/try.v1
+  version: 312d2599e12e89ca89b52a09597394f449235d80
+- name: gopkg.in/yaml.v2
+  version: 51d6538a90f86fe93ac480b35f37b2be17fef232
+testImports:
+- name: github.com/davecgh/go-spew
+  version: 04cdfd42973bb9c8589fd6a731800cf222fde1a9
+  subpackages:
+  - spew
+- name: github.com/pmezard/go-difflib
+  version: d8ed2627bdf02c080bf22230dbb337003b7aba2d
+  subpackages:
+  - difflib
+- name: github.com/stretchr/testify
+  version: f6abca593680b2315d2075e0f5e2a9751e3f431a
+  subpackages:
+  - assert
+  - mock
+  - require
+  - suite
