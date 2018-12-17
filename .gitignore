@@ -1,8 +1,4 @@
-afc
-config.ini
 bundles
-*.bak
-*.swp
 .idea/*
 .DS_Store
 vendor/*
