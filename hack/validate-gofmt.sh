@@ -5,9 +5,7 @@ files=( $(find . -name "*.go" | grep -v "^./vendor/") )
 badFiles=()
 for f in "${files[@]}"; do
     echo "---------------------- $f ----------------------"
-    gofmt -s -l "$f"
-    res="$?"
-    if [ "$res" -ne 0 ]; then
+    if [ "$(gofmt -s -l ${f})" ]; then
         badFiles+=( "$f" )
     fi
 done

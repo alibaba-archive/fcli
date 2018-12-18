@@ -6,6 +6,7 @@ go:
 before_install:
   - go get github.com/Masterminds/glide
   - go install github.com/Masterminds/glide
+  - go get -u golang.org/x/lint/golint
   - glide i -v
 
 script:
