@@ -34,7 +34,7 @@ type shellState struct {
 
 // consts ...
 const (
-	dockerRunFormat = `docker run -a stdout -a stderr -a stdin --rm -i -t -v %s:/code %s /bin/bash`
+	dockerRunFormat = `docker pull %s && docker run -a stdout -a stderr -a stdin --rm -i -t -v %s:/code %s /bin/bash`
 	//use this to handle request parameters, not for local env path.
 	filepathSeparator string = "/"
 
@@ -1672,7 +1672,7 @@ var shellCmd = &cobra.Command{
 		getDockerCmdString := func(runtime string, codeDir string) (string, error) {
 
 			if v, ok := supportedRuntimes[runtime]; ok {
-				return fmt.Sprintf(dockerRunFormat, codeDir, v), nil
+				return fmt.Sprintf(dockerRunFormat, v, codeDir, v), nil
 			}
 			return "", fmt.Errorf("invalid runtime: %s", runtime)
 		}
