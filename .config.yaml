@@ -1,0 +1,9 @@
+endpoint: http://127.0.0.1:8001
+api_version: "2016-08-15"
+access_key_id: test-user
+access_key_secret: test-secret
+security_token: ""
+useragent: '@alicloud/fcli/1.0.0 ( go1.11.2; OS darwin amd64; language ; mid test-server)'
+debug: false
+timeout: 60
+sls_endpoint: cn-shanghai.log.aliyuncs.com

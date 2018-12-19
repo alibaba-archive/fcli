@@ -10,7 +10,9 @@ before_install:
   - glide i -v
 
 script:
+  - ./hack/mock-server.sh
   - ./hack/validate-gofmt.sh
   - ./hack/validate-golint.sh
   - ./hack/validate-govet.sh
   - ./hack/unit-test.sh
+  - ./hack/integrity-test.sh
