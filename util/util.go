@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/aliyun/fcli/version"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"runtime"
 	"strconv"
@@ -355,6 +356,15 @@ func GetBindingCmd(name, arg, cmdString string) *exec.Cmd {
 	return cmd
 }
 
+// CheckLocalImage Check local image exist
+func CheckLocalImage(name, tag string) bool {
+	_, err := exec.Command("docker", "inspect", name+":"+tag).Output()
+	if err != nil {
+		return false
+	}
+	return true
+}
+
 // ParseAdditionalVersionWeight parse route string to map and return
 func ParseAdditionalVersionWeight(routes []string) map[string]float64 {
 	additionalVersionWeight := make(map[string]float64)
@@ -416,4 +426,43 @@ func GetTriggerConfig(triggerType string, triggerConfigFile string) (interface{}
 		return nil, fmt.Errorf("unsupported trigger type, expect oss, log, timer, http, cdn_events, mns_topic, actual %s", triggerType)
 	}
 
+}
+
+// GetPublicImageDigest Get docker hub public image digest: sha256:xxxxxxx
+func GetPublicImageDigest(name, tag string) (string, error) {
+	// get token
+	resp, err := http.Get("https://auth.docker.io/token?service=registry.docker.io&scope=repository:" + name + ":pull")
+	if err != nil {
+		return "", err
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+
+	err = resp.Body.Close()
+	if err != nil {
+		return "", err
+	}
+
+	var f interface{}
+	err = json.Unmarshal(body, &f)
+	if err != nil {
+		return "", err
+	}
+
+	m := f.(map[string]interface{})
+	token := m["token"].(string)
+
+	// get digest
+	req, _ := http.NewRequest("GET", "https://registry-1.docker.io/v2/"+name+"/manifests/"+tag, nil)
+	req.Header.Add("Authorization", "Bearer "+token)
+	req.Header.Add("Accept", "application/vnd.docker.distribution.manifest.v2+json")
+
+	client := &http.Client{}
+	resp, _ = client.Do(req)
+	digest := resp.Header.Get("Docker-Content-Digest")
+
+	return digest, nil
 }
