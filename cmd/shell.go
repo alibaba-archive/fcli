@@ -1727,7 +1727,7 @@ var shellCmd = &cobra.Command{
 				runtimeQualifier := runtimeName + ":" + dockerRuntimeImageTag
 
 				// check local image
-				localImageExisted := util.CheckLocalImage(runtimeName, dockerRuntimeImageTag)
+				localImageExisted := util.CheckImageExist(runtimeName, dockerRuntimeImageTag)
 				if localImageExisted {
 					// check runtime
 					lastDigest, err := util.GetPublicImageDigest(runtimeName, dockerRuntimeImageTag)
@@ -1735,17 +1735,25 @@ var shellCmd = &cobra.Command{
 						c.Err(err)
 						return
 					}
-					current, _ := exec.Command("docker", "inspect", "--format='{{index .RepoDigests 0}}'", runtimeQualifier).Output()
-					currentDisgest := strings.Replace(strings.TrimRight(string(current), "\n"), "'", "", -1)
-					currentDisgest = currentDisgest[strings.Index(currentDisgest, "@")+1:]
-					if lastDigest != currentDisgest {
+
+					currentDigest, err := util.GetLocalImageDigest(runtimeName, dockerRuntimeImageTag)
+					if err != nil {
+						c.Err(err)
+						return
+					}
+					if lastDigest != currentDigest {
 						c.Println("Warning: Your " + runtimeQualifier + " image is not the latest version")
 						c.Println("Warning: You can use 'docker pull " + runtimeQualifier + "' to update image")
+						c.Println()
 					}
 				}
 
 				dockerRunArgs := strings.Split(fmt.Sprintf(dockerRunParameter, *codeDir, runtimeQualifier), " ")
-				subCmd := util.NewExecutableDockerCmd(dockerRunArgs...)
+				subCmd := exec.Command("docker", dockerRunArgs...)
+				subCmd.Stdin = os.Stdin
+				subCmd.Stdout = os.Stdout
+				subCmd.Stderr = os.Stderr
+
 				c.Println("Entering the container. Your code is in the /code direcotry.")
 				err = subCmd.Run()
 				c.Err(err)

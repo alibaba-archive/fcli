@@ -356,13 +356,13 @@ func GetBindingCmd(name, arg, cmdString string) *exec.Cmd {
 	return cmd
 }
 
-// CheckLocalImage Check local image exist
-func CheckLocalImage(name, tag string) bool {
-	_, err := exec.Command("docker", "inspect", name+":"+tag).Output()
+// CheckImageExist Check local image exist
+func CheckImageExist(name, tag string) bool {
+	res, err := exec.Command("docker", "images", "-q", name+":"+tag).Output()
 	if err != nil {
 		return false
 	}
-	return true
+	return len(res) != 0
 }
 
 // ParseAdditionalVersionWeight parse route string to map and return
@@ -464,5 +464,16 @@ func GetPublicImageDigest(name, tag string) (string, error) {
 	resp, _ = client.Do(req)
 	digest := resp.Header.Get("Docker-Content-Digest")
 
+	return digest, nil
+}
+
+// GetLocalImageDigest Get local docker image digest: sha256:xxxxxxx
+func GetLocalImageDigest(name, tag string) (string, error) {
+	res, err := exec.Command("docker", "image", "inspect", "--format='{{index .RepoDigests 0}}'", name+":"+tag).Output()
+	if err != nil {
+		return "", err
+	}
+	digest := strings.Replace(strings.TrimRight(string(res), "\n"), "'", "", -1)
+	digest = digest[strings.Index(digest, "@")+1:]
 	return digest, nil
 }
