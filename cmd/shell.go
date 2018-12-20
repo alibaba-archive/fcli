@@ -1729,22 +1729,15 @@ var shellCmd = &cobra.Command{
 				// check local image
 				localImageExisted := util.CheckImageExist(runtimeName, dockerRuntimeImageTag)
 				if localImageExisted {
-					// check runtime
+					// check runtime, if error then docker run directly. For user can use local image without network.
 					lastDigest, err := util.GetPublicImageDigest(runtimeName, dockerRuntimeImageTag)
-					if err != nil {
-						c.Err(err)
-						return
-					}
-
-					currentDigest, err := util.GetLocalImageDigest(runtimeName, dockerRuntimeImageTag)
-					if err != nil {
-						c.Err(err)
-						return
-					}
-					if lastDigest != currentDigest {
-						c.Println("Warning: Your " + runtimeQualifier + " image is not the latest version")
-						c.Println("Warning: You can use 'docker pull " + runtimeQualifier + "' to update image")
-						c.Println()
+					if err == nil {
+						currentDigest, err := util.GetLocalImageDigest(runtimeName, dockerRuntimeImageTag)
+						if err == nil && lastDigest != currentDigest {
+							c.Println("Warning: Your " + runtimeQualifier + " image is not the latest version")
+							c.Println("Warning: You can use 'docker pull " + runtimeQualifier + "' to update image")
+							c.Println()
+						}
 					}
 				}
 

@@ -467,9 +467,11 @@ func GetPublicImageDigest(name, tag string) (string, error) {
 	return digest, nil
 }
 
+var output = (*exec.Cmd).Output
+
 // GetLocalImageDigest Get local docker image digest: sha256:xxxxxxx
 func GetLocalImageDigest(name, tag string) (string, error) {
-	res, err := exec.Command("docker", "image", "inspect", "--format='{{index .RepoDigests 0}}'", name+":"+tag).Output()
+	res, err := output(exec.Command("docker", "image", "inspect", "--format='{{index .RepoDigests 0}}'", name+":"+tag))
 	if err != nil {
 		return "", err
 	}

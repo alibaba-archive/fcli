@@ -1,5 +1,5 @@
-hash: 7936af80b64f6bbcad194d08b69102819d8ef3cd940db00fd5ec122d58307aea
-updated: 2018-12-14T14:09:11.9245+08:00
+hash: ccfa479ad08397e433d854e0841acee9f32271f1e5e3abf544111c7f2266e183
+updated: 2018-12-21T10:04:51.347077+08:00
 imports:
 - name: github.com/abiosoft/ishell
   version: d2bd206ead0ec66d7b0f68c138a5d2f7cf600180
@@ -68,13 +68,13 @@ imports:
 - name: github.com/satori/go.uuid
   version: b2ce2384e17bbe0c6d34077efa39dbab3e09123b
 - name: github.com/spf13/afero
-  version: d40851caa0d747393da1ffb28f7f9d8b4eeffebd
+  version: a5d6946387efe7d64d09dcba68cdd523dc1273a3
   subpackages:
   - mem
 - name: github.com/spf13/cast
   version: 8c9545af88b134710ab1cd196795e7f2388358d7
 - name: github.com/spf13/cobra
-  version: d2d81d9a96e23f0255397222bb0b4e3165e492dc
+  version: ef82de70bb3f60c65fb8eebacbb2d122ef517385
 - name: github.com/spf13/jwalterweatherman
   version: 94f6ae3ed3bceceafa716478c5fbf8d29ca601a1
 - name: github.com/spf13/pflag
@@ -82,11 +82,11 @@ imports:
 - name: github.com/spf13/viper
   version: 6d33b5a963d922d182c91e8a1c88d81fd150cfd4
 - name: golang.org/x/net
-  version: 891ebc4b82d6e74f468c533b06f983c7be918a96
+  version: 927f97764cc334a6575f4b7a1584a147864d5723
   subpackages:
   - publicsuffix
 - name: golang.org/x/sys
-  version: 4d1cda033e0619309c606fc686de3adcf599539e
+  version: b00e65af1da0681cde6c8227839a0ca53bbf16bb
   subpackages:
   - unix
   - windows
@@ -101,6 +101,8 @@ imports:
   subpackages:
   - core
   - terminal
+- name: gopkg.in/h2non/gock.v1
+  version: a6029d17e101ac1594adafea9e63fd8c988a8701
 - name: gopkg.in/matryer/try.v1
   version: 312d2599e12e89ca89b52a09597394f449235d80
 - name: gopkg.in/yaml.v2
