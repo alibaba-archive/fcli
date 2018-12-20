@@ -6,10 +6,13 @@ go:
 before_install:
   - go get github.com/Masterminds/glide
   - go install github.com/Masterminds/glide
+  - go get -u golang.org/x/lint/golint
   - glide i -v
 
 script:
+  - ./hack/mock-server.sh
   - ./hack/validate-gofmt.sh
   - ./hack/validate-golint.sh
   - ./hack/validate-govet.sh
   - ./hack/unit-test.sh
+  - ./hack/integrity-test.sh
