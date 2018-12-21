@@ -1,16 +1,18 @@
 package: github.com/aliyun/fcli
 import:
-  - package: github.com/aliyun/fc-go-sdk
-  - package: github.com/alyu/configparser
-  - package: github.com/spf13/cobra
-  - package: gopkg.in/matryer/try.v1
-    version: 312d2599e12e89ca89b52a09597394f449235d80
-  - package: github.com/spf13/viper
-  - package: github.com/abiosoft/ishell
-  - package: gopkg.in/yaml.v2
-  - package: github.com/aliyun/aliyun-log-go-sdk
-    version: ^0.1.0
-  - package: gopkg.in/AlecAivazis/survey.v1
-    version: ^1.6.3
-  - package: github.com/denisbrodbeck/machineid
-    version: v1.0.0
+- package: github.com/aliyun/fc-go-sdk
+- package: github.com/alyu/configparser
+- package: github.com/spf13/cobra
+- package: gopkg.in/matryer/try.v1
+  version: 312d2599e12e89ca89b52a09597394f449235d80
+- package: github.com/spf13/viper
+- package: github.com/abiosoft/ishell
+- package: gopkg.in/yaml.v2
+- package: github.com/aliyun/aliyun-log-go-sdk
+  version: ^0.1.0
+- package: gopkg.in/AlecAivazis/survey.v1
+  version: ^1.6.3
+- package: github.com/denisbrodbeck/machineid
+  version: v1.0.0
+- package: gopkg.in/h2non/gock.v1
+  version: ~1.0.12

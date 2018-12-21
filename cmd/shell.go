@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"os/exec"
 	"path"
 	"path/filepath"
 	"strings"
@@ -34,7 +35,8 @@ type shellState struct {
 
 // consts ...
 const (
-	dockerRunFormat = `docker run -a stdout -a stderr -a stdin --rm -i -t -v %s:/code %s /bin/bash`
+	dockerRuntimeImageTag = "build"
+	dockerRunParameter    = "run --rm -i -t -v %s:/code %s /bin/bash"
 	//use this to handle request parameters, not for local env path.
 	filepathSeparator string = "/"
 
@@ -1661,20 +1663,12 @@ var shellCmd = &cobra.Command{
 		}
 
 		supportedRuntimes := map[string]string{
-			"python2.7": "aliyunfc/runtime-python2.7:build",
-			"python3":   "aliyunfc/runtime-python3.6:build",
-			"nodejs6":   "aliyunfc/runtime-nodejs6:build",
-			"nodejs8":   "aliyunfc/runtime-nodejs8:build",
-			"java8":     "aliyunfc/runtime-java8:build",
-			"php7.2":    "aliyunfc/runtime-php7.2:build",
-		}
-
-		getDockerCmdString := func(runtime string, codeDir string) (string, error) {
-
-			if v, ok := supportedRuntimes[runtime]; ok {
-				return fmt.Sprintf(dockerRunFormat, codeDir, v), nil
-			}
-			return "", fmt.Errorf("invalid runtime: %s", runtime)
+			"python2.7": "aliyunfc/runtime-python2.7",
+			"python3":   "aliyunfc/runtime-python3.6",
+			"nodejs6":   "aliyunfc/runtime-nodejs6",
+			"nodejs8":   "aliyunfc/runtime-nodejs8",
+			"java8":     "aliyunfc/runtime-java8",
+			"php7.2":    "aliyunfc/runtime-php7.2",
 		}
 
 		sbox := &ishell.Cmd{
@@ -1729,12 +1723,30 @@ var shellCmd = &cobra.Command{
 					return
 				}
 
-				dockerCmdStr, err := getDockerCmdString(*runtime, *codeDir)
-				if err != nil {
-					c.Err(err)
-					return
+				runtimeName := supportedRuntimes[*runtime]
+				runtimeQualifier := runtimeName + ":" + dockerRuntimeImageTag
+
+				// check local image
+				localImageExisted := util.CheckImageExist(runtimeName, dockerRuntimeImageTag)
+				if localImageExisted {
+					// check runtime, if error then docker run directly. For user can use local image without network.
+					lastDigest, err := util.GetPublicImageDigest(runtimeName, dockerRuntimeImageTag)
+					if err == nil {
+						currentDigest, err := util.GetLocalImageDigest(runtimeName, dockerRuntimeImageTag)
+						if err == nil && lastDigest != currentDigest {
+							c.Println("Warning: Your " + runtimeQualifier + " image is not the latest version")
+							c.Println("Warning: You can use 'docker pull " + runtimeQualifier + "' to update image")
+							c.Println()
+						}
+					}
 				}
-				subCmd := util.NewExecutableSubCmd(dockerCmdStr)
+
+				dockerRunArgs := strings.Split(fmt.Sprintf(dockerRunParameter, *codeDir, runtimeQualifier), " ")
+				subCmd := exec.Command("docker", dockerRunArgs...)
+				subCmd.Stdin = os.Stdin
+				subCmd.Stdout = os.Stdout
+				subCmd.Stderr = os.Stderr
+
 				c.Println("Entering the container. Your code is in the /code direcotry.")
 				err = subCmd.Run()
 				c.Err(err)
