@@ -21,6 +21,21 @@ func (s *UtilTestSuite) TestGetRegionNo() {
 	s.Equal("cn-hangzhou", region)
 }
 
+func (s *UtilTestSuite) TestCheckImageExist() {
+	output = func(cmd *exec.Cmd) (bytes []byte, e error) {
+		return []byte{}, nil
+	}
+
+	isExist := CheckImageExist("aliyunfc/runtime-nodejs6", "build")
+	s.False(isExist)
+
+	output = func(cmd *exec.Cmd) (bytes []byte, e error) {
+		return []byte{1}, nil
+	}
+	isExist = CheckImageExist("aliyunfc/runtime-nodejs6", "build")
+	s.True(isExist)
+}
+
 func (s *UtilTestSuite) TestGetPublicImageDigest() {
 	defer gock.Off()
 	gock.New("https://auth.docker.io").

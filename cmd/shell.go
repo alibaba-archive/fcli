@@ -36,7 +36,7 @@ type shellState struct {
 // consts ...
 const (
 	dockerRuntimeImageTag = "build"
-	dockerRunParameter    = "run -a stdout -a stderr -a stdin --rm -i -t -v %s:/code %s /bin/bash"
+	dockerRunParameter    = "run --rm -i -t -v %s:/code %s /bin/bash"
 	//use this to handle request parameters, not for local env path.
 	filepathSeparator string = "/"
 

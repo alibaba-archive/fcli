@@ -358,7 +358,7 @@ func GetBindingCmd(name, arg, cmdString string) *exec.Cmd {
 
 // CheckImageExist Check local image exist
 func CheckImageExist(name, tag string) bool {
-	res, err := exec.Command("docker", "images", "-q", name+":"+tag).Output()
+	res, err := output(exec.Command("docker", "images", "-q", name+":"+tag))
 	if err != nil {
 		return false
 	}
@@ -456,12 +456,18 @@ func GetPublicImageDigest(name, tag string) (string, error) {
 	token := m["token"].(string)
 
 	// get digest
-	req, _ := http.NewRequest("GET", "https://registry-1.docker.io/v2/"+name+"/manifests/"+tag, nil)
+	req, err := http.NewRequest("GET", "https://registry-1.docker.io/v2/"+name+"/manifests/"+tag, nil)
+	if err != nil {
+		return "", err
+	}
 	req.Header.Add("Authorization", "Bearer "+token)
 	req.Header.Add("Accept", "application/vnd.docker.distribution.manifest.v2+json")
 
 	client := &http.Client{}
-	resp, _ = client.Do(req)
+	resp, err = client.Do(req)
+	if err != nil {
+		return "", err
+	}
 	digest := resp.Header.Get("Docker-Content-Digest")
 
 	return digest, nil
