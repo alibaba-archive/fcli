@@ -1,0 +1,4 @@
+triggerConfig:
+  CronExpression: '0 0 8 * * *'
+  Enable: true
+  Payload: 'awesome-fc'

@@ -1,0 +1,5 @@
+triggerConfig:
+  eventName: cdnEvent
+  eventVersion: testVersion
+  notes: this is test
+  

@@ -1,0 +1,8 @@
+triggerConfig:
+  events:
+    - oss:ObjectCreated:CopyObject
+    - oss:ObjectCreated:PostObject
+  filter:
+    key:
+      prefix: foo
+      suffix: bar

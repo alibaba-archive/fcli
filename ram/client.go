@@ -16,6 +16,20 @@ import (
 	"gopkg.in/matryer/try.v1"
 )
 
+// RoleManager define role operation
+type RoleManager interface {
+	CreateRole(roleName, assumeRolePolicyDocument, decription string) (*CreateRoleResponse, error)
+}
+
+// PolicyManager define policy operation
+type PolicyManager interface {
+	CreatePolicy(policyName, policyDocument, description string) (*CreatePolicyResponse, error)
+	CreatePolicyVersion(policyName, policyDocument, setAsDefault string) (*PolicyVersionResponse, error)
+	GetPolicyVersion(policyName, policyType, VersionID string) (*PolicyVersionResponse, error)
+	ListPolicyVersions(policyName string, policyType string) (*ListPolicyVersionsResponse, error)
+	AttachPolicyToRole(policyType, policyName, roleName string) (*AttachPolicyToRoleResponse, error)
+}
+
 // ClientOption define sdk option config
 type ClientOption struct {
 	retryTimes int32

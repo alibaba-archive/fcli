@@ -50,6 +50,12 @@ const (
 	KeyValueDelimiter = "="
 )
 
+// LogManager define the log operation
+type LogManager interface {
+	GetLogs(topic string, from int64, to int64, queryExp string,
+		maxLineNum int64, offset int64, reverse bool) (*sls.GetLogsResponse, error)
+}
+
 // GlobalConfig define the global configurations.
 type GlobalConfig struct {
 	Endpoint        string `yaml:"endpoint"`
@@ -117,7 +123,7 @@ func NewSLSClient(cfg *GlobalConfig) *sls.Client {
 }
 
 // GetLogs read the log data from loghub with the count limit.
-func GetLogs(store *sls.LogStore, topic, queryExp string, from, to, maxTotalLineNum int64, reverse bool) error {
+func GetLogs(store LogManager, topic, queryExp string, from, to, maxTotalLineNum int64, reverse bool) error {
 	var offset int64
 	lineNumPerGet := MaxLineNumPerGet
 	if lineNumPerGet > maxTotalLineNum {
@@ -149,7 +155,7 @@ func GetLogs(store *sls.LogStore, topic, queryExp string, from, to, maxTotalLine
 }
 
 // GetAllLogsWithinTimeRange ...
-func GetAllLogsWithinTimeRange(store *sls.LogStore, topic, queryExp string, from, to int64) error {
+func GetAllLogsWithinTimeRange(store LogManager, topic, queryExp string, from, to int64) error {
 	return GetLogs(store, topic, queryExp, from, to, math.MaxInt64, false)
 }
 
@@ -205,10 +211,9 @@ func GetRegionNoForEndpoint(endpoint string) string {
 	return regions[0]
 }
 
-// GetRegionNoForSLSEndpoint get region no from fc endpoint for slsendpoint
-func GetRegionNoForSLSEndpoint(endpoint string) string {
-	// TODO Support the intranet endpoint.
-	regions := []string{
+// GetSLSRegions get region list of sls
+func GetSLSRegions() []string {
+	return []string{
 		"cn-beijing",
 		"cn-hangzhou",
 		"cn-shanghai",
@@ -230,6 +235,12 @@ func GetRegionNoForSLSEndpoint(endpoint string) string {
 		"ap-south-1",
 		"eu-west-1",
 	}
+}
+
+// GetRegionNoForSLSEndpoint get region no from fc endpoint for slsendpoint
+func GetRegionNoForSLSEndpoint(endpoint string) string {
+	// TODO Support the intranet endpoint.
+	regions := GetSLSRegions()
 	for _, region := range regions {
 		if strings.Contains(endpoint, region) {
 			return region
@@ -251,7 +262,7 @@ func GetUIDFromEndpoint(endpoint string) (string, error) {
 }
 
 // CreateRole create the RAM role.
-func CreateRole(cli *ram.Client, roleName, principal string) (roleARN string, err error) {
+func CreateRole(cli ram.RoleManager, roleName, principal string) (roleARN string, err error) {
 	tmpl := `{"Statement": [{"Action": "sts:AssumeRole", "Effect": "Allow", "Principal": { "%s": ["%s"]}}], "Version": "1"}`
 	const roleType = "Service"
 	doc := fmt.Sprintf(tmpl, roleType, principal)
@@ -265,7 +276,7 @@ func CreateRole(cli *ram.Client, roleName, principal string) (roleARN string, er
 }
 
 // CreatePolicy create the RAM policy.
-func CreatePolicy(cli *ram.Client, policyName, action, resource string) error {
+func CreatePolicy(cli ram.PolicyManager, policyName, action, resource string) error {
 	tmpl := `{"Version": "1", "Statement": [{"Effect": "Allow", "Action": %s, "Resource": %s}]}`
 	doc := fmt.Sprintf(tmpl, action, resource)
 	desc := fmt.Sprintf("create the policy %s", policyName)
@@ -277,7 +288,7 @@ func CreatePolicy(cli *ram.Client, policyName, action, resource string) error {
 }
 
 // CreatePolicyVersion update resource permission.
-func CreatePolicyVersion(cli *ram.Client, policyName, action, resource string) error {
+func CreatePolicyVersion(cli ram.PolicyManager, policyName, action, resource string) error {
 	tmpl := `{"Version": "1", "Statement": [{"Effect": "Allow", "Action": %s, "Resource": %s}]}`
 	doc := fmt.Sprintf(tmpl, action, resource)
 	_, err := cli.CreatePolicyVersion(policyName, doc, "true")
@@ -288,7 +299,7 @@ func CreatePolicyVersion(cli *ram.Client, policyName, action, resource string) e
 }
 
 // GetDefaultPolicyVersion :
-func GetDefaultPolicyVersion(cli *ram.Client, policyName, policyType string) (*ram.PolicyVersion, error) {
+func GetDefaultPolicyVersion(cli ram.PolicyManager, policyName, policyType string) (*ram.PolicyVersion, error) {
 	versions, err := cli.ListPolicyVersions(policyName, policyType)
 	if err != nil {
 		return nil, err
@@ -330,7 +341,7 @@ func CheckPolicyResourcePermission(p *ram.PolicyVersion, resource string) (bool,
 }
 
 // AttachPolicy attach the policy to the specified role.
-func AttachPolicy(cli *ram.Client, policyName, roleName string) error {
+func AttachPolicy(cli ram.PolicyManager, policyName, roleName string) error {
 	_, err := cli.AttachPolicyToRole("Custom", policyName, roleName)
 	return err
 }

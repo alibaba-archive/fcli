@@ -1,0 +1,3 @@
+triggerConfig:
+  authType: ANONYMOUS
+  Methods: ['GET', 'POST', 'PUT']
