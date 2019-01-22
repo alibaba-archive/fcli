@@ -4,6 +4,7 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
+	"gopkg.in/matryer/try.v1"
 	"io/ioutil"
 	"math"
 	"net"
@@ -13,7 +14,6 @@ import (
 	"time"
 
 	"github.com/satori/go.uuid"
-	"gopkg.in/matryer/try.v1"
 )
 
 // RoleManager define role operation
@@ -30,6 +30,10 @@ type PolicyManager interface {
 	AttachPolicyToRole(policyType, policyName, roleName string) (*AttachPolicyToRoleResponse, error)
 }
 
+type RequestManager interface {
+	sendRequest(rawParams map[string]string) ([]byte, error)
+}
+
 // ClientOption define sdk option config
 type ClientOption struct {
 	retryTimes int32
@@ -42,6 +46,7 @@ type Client struct {
 	endpoint        *url.URL
 	option          *ClientOption
 	hclient         *http.Client
+	RequestManager
 }
 
 func (option *ClientOption) setRetryTimes(retry int32) {
@@ -139,7 +144,14 @@ func (c *Client) CreateRole(roleName, assumeRolePolicyDocument, decription strin
 	params["Description"] = decription
 	params["Action"] = action
 
-	body, err := c.sendRequest(params)
+	var body []byte
+	var err error
+
+	if c.RequestManager != nil {
+		body, err = c.RequestManager.sendRequest(params)
+	} else {
+		body, err = c.sendRequest(params)
+	}
 
 	if err != nil {
 		return nil, err
@@ -159,7 +171,15 @@ func (c *Client) GetRole(roleName string) (*GetRoleResponse, error) {
 	params := map[string]string{}
 	params["RoleName"] = roleName
 	params["Action"] = action
-	body, err := c.sendRequest(params)
+
+	var body []byte
+	var err error
+
+	if c.RequestManager != nil {
+		body, err = c.RequestManager.sendRequest(params)
+	} else {
+		body, err = c.sendRequest(params)
+	}
 
 	if err != nil {
 		return nil, err
@@ -179,7 +199,15 @@ func (c *Client) DeleteRole(roleName string) (*DeleteRoleResponse, error) {
 	params := map[string]string{}
 	params["RoleName"] = roleName
 	params["Action"] = action
-	body, err := c.sendRequest(params)
+
+	var body []byte
+	var err error
+
+	if c.RequestManager != nil {
+		body, err = c.RequestManager.sendRequest(params)
+	} else {
+		body, err = c.sendRequest(params)
+	}
 
 	if err != nil {
 		return nil, err
@@ -199,7 +227,15 @@ func (c *Client) ListRoles() (*ListRolesResponse, error) {
 	params := map[string]string{}
 	params["Action"] = action
 
-	body, err := c.sendRequest(params)
+
+	var body []byte
+	var err error
+
+	if c.RequestManager != nil {
+		body, err = c.RequestManager.sendRequest(params)
+	} else {
+		body, err = c.sendRequest(params)
+	}
 
 	if err != nil {
 		return nil, err
@@ -222,7 +258,15 @@ func (c *Client) CreatePolicy(policyName, policyDocument, description string) (*
 	params["PolicyDocument"] = policyDocument
 	params["Action"] = action
 
-	body, err := c.sendRequest(params)
+
+	var body []byte
+	var err error
+
+	if c.RequestManager != nil {
+		body, err = c.RequestManager.sendRequest(params)
+	} else {
+		body, err = c.sendRequest(params)
+	}
 
 	if err != nil {
 		return nil, err
@@ -243,7 +287,16 @@ func (c *Client) GetPolicy(policyName string, policyType string) (*GetPolicyResp
 	params["PolicyName"] = policyName
 	params["Action"] = action
 	params["PolicyType"] = policyType
-	body, err := c.sendRequest(params)
+
+	var body []byte
+	var err error
+
+	if c.RequestManager != nil {
+		body, err = c.RequestManager.sendRequest(params)
+	} else {
+		body, err = c.sendRequest(params)
+	}
+
 
 	if err != nil {
 		return nil, err
@@ -264,7 +317,15 @@ func (c *Client) ListPolicyVersions(policyName string, policyType string) (*List
 	params["PolicyName"] = policyName
 	params["Action"] = action
 	params["PolicyType"] = policyType
-	body, err := c.sendRequest(params)
+
+	var body []byte
+	var err error
+
+	if c.RequestManager != nil {
+		body, err = c.RequestManager.sendRequest(params)
+	} else {
+		body, err = c.sendRequest(params)
+	}
 
 	if err != nil {
 		return nil, err
@@ -286,7 +347,16 @@ func (c *Client) GetPolicyVersion(policyName, policyType, VersionID string) (*Po
 	params["Action"] = action
 	params["PolicyType"] = policyType
 	params["VersionId"] = VersionID
-	body, err := c.sendRequest(params)
+
+	var body []byte
+	var err error
+
+	if c.RequestManager != nil {
+		body, err = c.RequestManager.sendRequest(params)
+	} else {
+		body, err = c.sendRequest(params)
+	}
+
 
 	if err != nil {
 		return nil, err
@@ -308,7 +378,15 @@ func (c *Client) CreatePolicyVersion(policyName, policyDocument, setAsDefault st
 	params["Action"] = action
 	params["PolicyDocument"] = policyDocument
 	params["SetAsDefault"] = setAsDefault
-	body, err := c.sendRequest(params)
+
+	var body []byte
+	var err error
+
+	if c.RequestManager != nil {
+		body, err = c.RequestManager.sendRequest(params)
+	} else {
+		body, err = c.sendRequest(params)
+	}
 
 	if err != nil {
 		return nil, err
@@ -329,7 +407,15 @@ func (c *Client) DeletePolicy(policyName string) (*DeletePolicyResponse, error) 
 	params["Action"] = action
 	params["PolicyName"] = policyName
 
-	body, err := c.sendRequest(params)
+
+	var body []byte
+	var err error
+
+	if c.RequestManager != nil {
+		body, err = c.RequestManager.sendRequest(params)
+	} else {
+		body, err = c.sendRequest(params)
+	}
 
 	if err != nil {
 		return nil, err
@@ -349,7 +435,15 @@ func (c *Client) ListPolicies() (*ListPoliciesResponse, error) {
 	params := map[string]string{}
 	params["Action"] = action
 
-	body, err := c.sendRequest(params)
+
+	var body []byte
+	var err error
+
+	if c.RequestManager != nil {
+		body, err = c.RequestManager.sendRequest(params)
+	} else {
+		body, err = c.sendRequest(params)
+	}
 
 	if err != nil {
 		return nil, err
@@ -370,7 +464,15 @@ func (c *Client) ListPoliciesForRole(roleName string) (*ListPoliciesForRoleRespo
 	params["Action"] = action
 	params["RoleName"] = roleName
 
-	body, err := c.sendRequest(params)
+
+	var body []byte
+	var err error
+
+	if c.RequestManager != nil {
+		body, err = c.RequestManager.sendRequest(params)
+	} else {
+		body, err = c.sendRequest(params)
+	}
 
 	if err != nil {
 		return nil, err
@@ -393,7 +495,15 @@ func (c *Client) AttachPolicyToRole(policyType, policyName, roleName string) (*A
 	params["PolicyName"] = policyName
 	params["RoleName"] = roleName
 
-	body, err := c.sendRequest(params)
+
+	var body []byte
+	var err error
+
+	if c.RequestManager != nil {
+		body, err = c.RequestManager.sendRequest(params)
+	} else {
+		body, err = c.sendRequest(params)
+	}
 
 	if err != nil {
 		return nil, err
@@ -417,7 +527,15 @@ func (c *Client) DetachPolicyFromRole(policyType, policyName, roleName string) (
 	params["PolicyName"] = policyName
 	params["RoleName"] = roleName
 
-	body, err := c.sendRequest(params)
+
+	var body []byte
+	var err error
+
+	if c.RequestManager != nil {
+		body, err = c.RequestManager.sendRequest(params)
+	} else {
+		body, err = c.sendRequest(params)
+	}
 
 	if err != nil {
 		return nil, err
