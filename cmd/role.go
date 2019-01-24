@@ -31,9 +31,9 @@ var roleCmd = &cobra.Command{
 	Aliases: []string{"r"},
 	Short:   "role related operation",
 	Long: `role related operation
-	
+
 EXAMPLE:
-  fcli role config ......
+ fcli role config ......
 	`,
 	Run: func(cmd *cobra.Command, args []string) {
 

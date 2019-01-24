@@ -105,7 +105,7 @@ func parseAbsPath(path string) []string {
 	return ret
 }
 
-func getFCResrc(client *fc.Client, absPath string) (interface{}, error) {
+func getFCResrc(client util.IClient, absPath string) (interface{}, error) {
 	v := parseAbsPath(absPath)
 	if len(v) == 2 {
 		return nil, nil

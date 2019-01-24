@@ -18,7 +18,8 @@ var versionCmd = &cobra.Command{
 	Short:   "fcli version information",
 	Long:    `fcli version information`,
 
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		fmt.Printf("fcli version: %s\n", version.Version)
+		return nil
 	},
 }

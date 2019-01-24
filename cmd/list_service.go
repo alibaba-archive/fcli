@@ -43,11 +43,10 @@ var listServiceCmd = &cobra.Command{
 	Short:   "List services of the current account",
 	Long:    ``,
 
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		client, err := util.NewFClient(gConfig)
 		if err != nil {
-			fmt.Printf("Error: can not create fc client: %s\n", err)
-			return
+			return fmt.Errorf("can not create fc client: %s\n", err)
 		}
 
 		input := fc.NewListServicesInput().
@@ -58,8 +57,7 @@ var listServiceCmd = &cobra.Command{
 
 		resp, err := client.ListServices(input)
 		if err != nil {
-			fmt.Printf("Error: %s\n", err)
-			return
+			return fmt.Errorf("%s\n", err)
 		}
 
 		if *listServiceInput.nameOnly {
@@ -79,5 +77,6 @@ var listServiceCmd = &cobra.Command{
 			ret, _ := json.MarshalIndent(resp, "", "  ")
 			fmt.Printf("%s\n", string(ret))
 		}
+		return nil
 	},
 }

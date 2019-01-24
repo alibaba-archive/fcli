@@ -56,6 +56,35 @@ type LogManager interface {
 		maxLineNum int64, offset int64, reverse bool) (*sls.GetLogsResponse, error)
 }
 
+type IClient interface {
+	GetAccountSettings(input *fc.GetAccountSettingsInput) (*fc.GetAccountSettingsOutput, error)
+	GetService(input *fc.GetServiceInput) (*fc.GetServiceOutput, error)
+	ListServices(input *fc.ListServicesInput) (*fc.ListServicesOutput, error)
+	UpdateService(input *fc.UpdateServiceInput) (*fc.UpdateServiceOutput, error)
+	CreateService(input *fc.CreateServiceInput) (*fc.CreateServiceOutput, error)
+	DeleteService(input *fc.DeleteServiceInput) (*fc.DeleteServiceOutput, error)
+	PublishServiceVersion(input *fc.PublishServiceVersionInput) (*fc.PublishServiceVersionOutput, error)
+	ListServiceVersions(input *fc.ListServiceVersionsInput) (*fc.ListServiceVersionsOutput, error)
+	DeleteServiceVersion(input *fc.DeleteServiceVersionInput) (*fc.DeleteServiceVersionOutput, error)
+	CreateAlias(input *fc.CreateAliasInput) (*fc.CreateAliasOutput, error)
+	UpdateAlias(input *fc.UpdateAliasInput) (*fc.UpdateAliasOutput, error)
+	GetAlias(input *fc.GetAliasInput) (*fc.GetAliasOutput, error)
+	ListAliases(input *fc.ListAliasesInput) (*fc.ListAliasesOutput, error)
+	DeleteAlias(input *fc.DeleteAliasInput) (*fc.DeleteAliasOutput, error)
+	CreateFunction(input *fc.CreateFunctionInput) (*fc.CreateFunctionOutput, error)
+	DeleteFunction(input *fc.DeleteFunctionInput) (*fc.DeleteFunctionOutput, error)
+	GetFunction(input *fc.GetFunctionInput) (*fc.GetFunctionOutput, error)
+	GetFunctionCode(input *fc.GetFunctionCodeInput) (*fc.GetFunctionCodeOutput, error)
+	ListFunctions(input *fc.ListFunctionsInput) (*fc.ListFunctionsOutput, error)
+	UpdateFunction(input *fc.UpdateFunctionInput) (*fc.UpdateFunctionOutput, error)
+	CreateTrigger(input *fc.CreateTriggerInput) (*fc.CreateTriggerOutput, error)
+	GetTrigger(input *fc.GetTriggerInput) (*fc.GetTriggerOutput, error)
+	UpdateTrigger(input *fc.UpdateTriggerInput) (*fc.UpdateTriggerOutput, error)
+	DeleteTrigger(input *fc.DeleteTriggerInput) (*fc.DeleteTriggerOutput, error)
+	ListTriggers(input *fc.ListTriggersInput) (*fc.ListTriggersOutput, error)
+	InvokeFunction(input *fc.InvokeFunctionInput) (*fc.InvokeFunctionOutput, error)
+}
+
 // GlobalConfig define the global configurations.
 type GlobalConfig struct {
 	Endpoint        string `yaml:"endpoint"`
@@ -86,8 +115,13 @@ func NewGlobalConfig() *GlobalConfig {
 	return cfg
 }
 
+var Client IClient
+
 // NewFClient create a fc client.
-func NewFClient(cfg *GlobalConfig) (*fc.Client, error) {
+func NewFClient(cfg *GlobalConfig) (IClient, error) {
+	if Client != nil {
+		return Client, nil
+	}
 	return fc.NewClient(
 		cfg.Endpoint,
 		cfg.APIVersion,

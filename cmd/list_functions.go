@@ -50,11 +50,10 @@ var listFuncCmd = &cobra.Command{
 	Short:   "List functions belong to the specified service",
 	Long:    ``,
 
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		client, err := util.NewFClient(gConfig)
 		if err != nil {
-			fmt.Printf("Error: can not create fc client: %s\n", err)
-			return
+			return fmt.Errorf("can not create fc client: %s\n", err)
 		}
 
 		input := fc.NewListFunctionsInput(*listFuncInput.serviceName).
@@ -66,8 +65,7 @@ var listFuncCmd = &cobra.Command{
 
 		resp, err := client.ListFunctions(input)
 		if err != nil {
-			fmt.Printf("Error: %s\n", err)
-			return
+			return fmt.Errorf("%s\n", err)
 		}
 
 		if *listFuncInput.nameOnly {
@@ -87,5 +85,6 @@ var listFuncCmd = &cobra.Command{
 			ret, _ := json.MarshalIndent(resp, "", "  ")
 			fmt.Printf("%s\n", string(ret))
 		}
+		return nil
 	},
 }

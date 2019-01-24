@@ -17,6 +17,6 @@ func (s *FunctionStructsTestSuite) TestEnv() {
 
 }
 
-func TestConfig(t *testing.T) {
+func TestRoot(t *testing.T) {
 	suite.Run(t, new(FunctionStructsTestSuite))
 }

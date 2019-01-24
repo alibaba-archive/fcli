@@ -177,7 +177,7 @@ func (s *UtilTestSuite) TestGetUIDFromEndpoint() {
 	s.Nil(err)
 }
 
-// MockedRoleManager mocked ram.RoleManager ram.PolicyManager
+// MockedManager mocked ram.RoleManager ram.PolicyManager
 type MockedManager struct {
 	mock.Mock
 }

@@ -33,11 +33,10 @@ var deleteFuncCmd = &cobra.Command{
 	Short:   "Delete funtion",
 	Long:    ``,
 
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		client, err := util.NewFClient(gConfig)
 		if err != nil {
-			fmt.Printf("Error: can not create fc client: %s\n", err)
-			return
+			return fmt.Errorf("can not create fc client: %s\n", err)
 		}
 
 		input := fc.NewDeleteFunctionInput(*deleteFuncInput.serviceName, *deleteFuncInput.functionName)
@@ -47,7 +46,8 @@ var deleteFuncCmd = &cobra.Command{
 
 		_, err = client.DeleteFunction(input)
 		if err != nil {
-			fmt.Printf("Error: %s\n", err)
+			return fmt.Errorf("%s\n", err)
 		}
+		return nil
 	},
 }

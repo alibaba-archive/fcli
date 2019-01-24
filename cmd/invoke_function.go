@@ -3,10 +3,8 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"os"
-
 	"github.com/spf13/cobra"
+	"io/ioutil"
 
 	"github.com/aliyun/fc-go-sdk"
 	"github.com/aliyun/fcli/util"
@@ -46,11 +44,10 @@ fcli function invoke -s "service_name" -f "function_name"
 		    --event-file "event file"
 		    --event-str  "event_string"
 	            --qualifier  "LATEST"`,
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		resp, err := invokeFuncRun()
 		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
-			return
+			return fmt.Errorf("%s\n", err)
 		}
 
 		var output []byte
@@ -69,12 +66,13 @@ fcli function invoke -s "service_name" -f "function_name"
 
 		if invocationOutputFile == "" {
 			fmt.Println(string(output))
-			return
+			return nil
 		}
 		err = ioutil.WriteFile(invocationOutputFile, output, 0644)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "output error:%s\n", err)
+			return fmt.Errorf("output error:%s\n", err)
 		}
+		return nil
 	},
 }
 

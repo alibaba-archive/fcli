@@ -36,15 +36,15 @@ fcli alias delete -s(--service-name)      service_name
 			-a(--alias-name)  alias_name
 			--etag            a198ec37e2a1c2ababbb3717074f29ea
 			`,
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		client, err := util.NewFClient(gConfig)
 		if err != nil {
-			fmt.Printf("Error: can not create fc client: %s\n", err)
-			return
+			return fmt.Errorf("can not create fc client: %s\n", err)
 		}
 		_, err = client.DeleteAlias(&deleteAliasInput)
 		if err != nil {
-			fmt.Printf("Error: %s\n", err)
+			return fmt.Errorf("%s\n", err)
 		}
+		return nil
 	},
 }

@@ -41,17 +41,17 @@ fcli alias list -s(--service-name)       service_name
 			-n(--next-token) "next token"
 			-l(--limit)      100
 			`,
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		client, err := util.NewFClient(gConfig)
 		if err != nil {
-			fmt.Printf("Error: can not create fc client: %s\n", err)
-			return
+			return fmt.Errorf("can not create fc client: %s\n", err)
 		}
 		resp, err := client.ListAliases(&listAliasesInput)
 		if err != nil {
-			fmt.Printf("Error: %s\n", err)
+			return fmt.Errorf("%s\n", err)
 		} else {
 			fmt.Println(resp)
 		}
+		return nil
 	},
 }

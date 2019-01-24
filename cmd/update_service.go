@@ -68,7 +68,7 @@ var updateServiceCmd = &cobra.Command{
 	Short:   "update service",
 	Long:    ``,
 
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		input := fc.NewUpdateServiceInput(*updateServiceInput.serviceName)
 		if cmd.Flags().Changed("description") {
 			input.WithDescription(*updateServiceInput.description)
@@ -102,8 +102,7 @@ var updateServiceCmd = &cobra.Command{
 		}
 		if cmd.Flags().Changed("nas-server-addr") || cmd.Flags().Changed("nas-mount-dir") {
 			if len(*updateServiceInput.nasServer) != len(*updateServiceInput.nasMount) {
-				fmt.Println("nas server array length must match nas dir array length")
-				return
+				return fmt.Errorf("nas server array length must match nas dir array length")
 			}
 			mountPoints := []fc.NASMountConfig{}
 			for i, addr := range *updateServiceInput.nasServer {
@@ -117,12 +116,12 @@ var updateServiceCmd = &cobra.Command{
 		input.WithNASConfig(nasConfig)
 		client, err := util.NewFClient(gConfig)
 		if err != nil {
-			fmt.Printf("Error: can not create fc client: %s\n", err)
-			return
+			return fmt.Errorf("can not create fc client: %s\n", err)
 		}
 		_, err = client.UpdateService(input)
 		if err != nil {
-			fmt.Printf("Error: %s\n", err)
+			return fmt.Errorf("%s\n", err)
 		}
+		return nil
 	},
 }

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/aliyun/fcli/util"
 	"net/http"
 	"os"
 	"reflect"
@@ -12,7 +13,7 @@ import (
 	"github.com/aliyun/fc-go-sdk"
 )
 
-var client *fc.Client
+var client util.IClient
 
 func getClient() (*fc.Client, error) {
 	clientTemp, err := fc.NewClient(
