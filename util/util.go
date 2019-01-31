@@ -184,6 +184,7 @@ func GetRegions() []string {
 		"cn-shanghai",
 		"cn-shenzhen",
 		"cn-hongkong",
+		"cn-huhehaote",
 		"ap-southeast-1",
 		"ap-southeast-2",
 		"ap-northeast-1",
