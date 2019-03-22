@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"github.com/aliyun/fc-go-sdk"
+	"strings"
 
 	"fmt"
 	"io/ioutil"
@@ -25,6 +26,7 @@ type createFuncInputType struct {
 	memory                int32
 	timeout               int32
 	initializationTimeout int32
+	environmentVariables  []string
 }
 
 // Use a unique name to avoid global variable confliction.
@@ -53,6 +55,7 @@ func init() {
 		&createFuncInput.handler, "handler", "h", "", "handler is the entrypoint for the function execution")
 	createFuncCmd.Flags().StringVarP(
 		&createFuncInput.initializer, "initializer", "i", "", "initializer is the entrypoint for the initializer execution")
+	createFuncCmd.Flags().StringArrayVar(&createFuncInput.environmentVariables, "env", []string{}, "config environment variables")
 }
 
 var createFuncCmd = &cobra.Command{
@@ -70,6 +73,18 @@ var createFuncCmd = &cobra.Command{
 			WithHandler(createFuncInput.handler).
 			WithInitializer(createFuncInput.initializer).
 			WithRuntime(createFuncInput.runtime)
+
+		if cmd.Flags().Changed("env") {
+			envMap := make(map[string]string)
+			for _, envVar := range createFuncInput.environmentVariables {
+				config := strings.Split(envVar, "=")
+				if len(config) == 2 {
+					envMap[config[0]] = config[1]
+				}
+			}
+			input.WithEnvironmentVariables(envMap)
+		}
+
 		if createFuncInput.codeFile != "" {
 			var data []byte
 			data, err := ioutil.ReadFile(createFuncInput.codeFile)

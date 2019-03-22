@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"io/ioutil"
+	"strings"
 
 	"github.com/aliyun/fc-go-sdk"
 
@@ -27,6 +28,7 @@ type updateFuncInputType struct {
 	timeout               *int32
 	initializationTimeout *int32
 	etag                  *string
+	environmentVariables  *[]string
 }
 
 var updateFuncInput updateFuncInputType
@@ -55,6 +57,7 @@ func init() {
 	updateFuncInput.etag = updateFuncCmd.Flags().String(
 		"etag", "", "provide etag to do the conditional update. "+
 			"If the specified etag does not match the function's, the update will fail.")
+	updateFuncInput.environmentVariables = updateFuncCmd.Flags().StringArray("env", []string{}, "config environment variables")
 }
 
 var updateFuncCmd = &cobra.Command{
@@ -64,6 +67,16 @@ var updateFuncCmd = &cobra.Command{
 	Long:    ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		input := fc.NewUpdateFunctionInput(*updateFuncInput.serviceName, *updateFuncInput.functionName)
+		if cmd.Flags().Changed("env") {
+			envMap := make(map[string]string)
+			for _, envVar := range *updateFuncInput.environmentVariables {
+				config := strings.Split(envVar, "=")
+				if len(config) == 2 {
+					envMap[config[0]] = config[1]
+				}
+			}
+			input.WithEnvironmentVariables(envMap)
+		}
 		if cmd.Flags().Changed("description") {
 			input.WithDescription(*updateFuncInput.description)
 		}

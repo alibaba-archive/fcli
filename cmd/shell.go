@@ -339,6 +339,7 @@ var shellCmd = &cobra.Command{
 			handler := flags.StringP("handler", "h", "", "handler is the entrypoint for the function execution")
 			initializer := flags.StringP("initializer", "i", "", "initializer is the entrypoint for the initializer execution")
 			etag := flags.String("etag", "", "function etag for update")
+			environmentVariables := flags.StringArray("env", []string{}, "config environment variables")
 			err := flags.Parse(args)
 			if err != nil {
 				return err
@@ -365,6 +366,14 @@ var shellCmd = &cobra.Command{
 			serviceName := resrcList[2]
 			functionName := resrcList[3]
 
+			envMap := make(map[string]string)
+			for _, envVar := range *environmentVariables {
+				config := strings.Split(envVar, "=")
+				if len(config) == 2 {
+					envMap[config[0]] = config[1]
+				}
+			}
+
 			if op == "CreateFunction" {
 				input := fc.NewCreateFunctionInput(serviceName).
 					WithFunctionName(functionName).
@@ -374,7 +383,8 @@ var shellCmd = &cobra.Command{
 					WithInitializationTimeout(*initializationTimeout).
 					WithHandler(*handler).
 					WithInitializer(*initializer).
-					WithRuntime(*runtime)
+					WithRuntime(*runtime).
+					WithEnvironmentVariables(envMap)
 				if *codeFile != "" {
 					var data []byte
 					data, err = ioutil.ReadFile(*codeFile)
@@ -395,6 +405,9 @@ var shellCmd = &cobra.Command{
 				_, err = client.CreateFunction(input)
 			} else {
 				input := fc.NewUpdateFunctionInput(serviceName, functionName)
+				if flags.Changed("env") {
+					input.WithEnvironmentVariables(envMap)
+				}
 				if flags.Changed("description") {
 					input.WithDescription(*desc)
 				}
