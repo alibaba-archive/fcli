@@ -1,11 +1,10 @@
 package cmd
 
 import (
-	"github.com/aliyun/fc-go-sdk"
-	"strings"
-
 	"fmt"
+	"github.com/aliyun/fc-go-sdk"
 	"io/ioutil"
+	"strings"
 
 	"github.com/spf13/cobra"
 
@@ -13,20 +12,21 @@ import (
 )
 
 type createFuncInputType struct {
-	serviceName           string
-	functionName          string
-	description           string
-	runtime               string
-	handler               string
-	initializer           string
-	codeDir               string
-	codeFile              string
-	codeOSSBucket         string
-	codeOSSObject         string
-	memory                int32
-	timeout               int32
-	initializationTimeout int32
-	environmentVariables  []string
+	serviceName            string
+	functionName           string
+	description            string
+	runtime                string
+	handler                string
+	initializer            string
+	codeDir                string
+	codeFile               string
+	codeOSSBucket          string
+	codeOSSObject          string
+	memory                 int32
+	timeout                int32
+	initializationTimeout  int32
+	environmentVariables   []string
+	environmentConfigFiles []string
 }
 
 // Use a unique name to avoid global variable confliction.
@@ -55,7 +55,8 @@ func init() {
 		&createFuncInput.handler, "handler", "h", "", "handler is the entrypoint for the function execution")
 	createFuncCmd.Flags().StringVarP(
 		&createFuncInput.initializer, "initializer", "i", "", "initializer is the entrypoint for the initializer execution")
-	createFuncCmd.Flags().StringArrayVar(&createFuncInput.environmentVariables, "env", []string{}, "config environment variables")
+	createFuncCmd.Flags().StringArrayVar(&createFuncInput.environmentVariables, "env", []string{}, "set environment variables")
+	createFuncCmd.Flags().StringArrayVar(&createFuncInput.environmentConfigFiles, "env-file", []string{}, "read in a file of environment variables")
 }
 
 var createFuncCmd = &cobra.Command{
@@ -74,8 +75,20 @@ var createFuncCmd = &cobra.Command{
 			WithInitializer(createFuncInput.initializer).
 			WithRuntime(createFuncInput.runtime)
 
+		envMap := make(map[string]string)
+
+		if cmd.Flags().Changed("env-file") {
+			for _, envFilePath := range createFuncInput.environmentConfigFiles {
+				_, err := util.GetEnvSetting(envMap, envFilePath)
+				if err != nil {
+					fmt.Printf("Error: %s\n", err)
+					return
+				}
+			}
+			input.WithEnvironmentVariables(envMap)
+		}
+
 		if cmd.Flags().Changed("env") {
-			envMap := make(map[string]string)
 			for _, envVar := range createFuncInput.environmentVariables {
 				config := strings.Split(envVar, "=")
 				if len(config) == 2 {

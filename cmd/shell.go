@@ -339,7 +339,9 @@ var shellCmd = &cobra.Command{
 			handler := flags.StringP("handler", "h", "", "handler is the entrypoint for the function execution")
 			initializer := flags.StringP("initializer", "i", "", "initializer is the entrypoint for the initializer execution")
 			etag := flags.String("etag", "", "function etag for update")
-			environmentVariables := flags.StringArray("env", []string{}, "config environment variables")
+			environmentVariables := flags.StringArray("env", []string{}, "set environment variables")
+			environmentConfigFiles := flags.StringArray("env-file", []string{}, "read in a file of environment variables")
+
 			err := flags.Parse(args)
 			if err != nil {
 				return err
@@ -367,6 +369,14 @@ var shellCmd = &cobra.Command{
 			functionName := resrcList[3]
 
 			envMap := make(map[string]string)
+
+			for _, envFilePath := range *environmentConfigFiles {
+				_, err := util.GetEnvSetting(envMap, envFilePath)
+				if err != nil {
+					return err
+				}
+			}
+
 			for _, envVar := range *environmentVariables {
 				config := strings.Split(envVar, "=")
 				if len(config) == 2 {
