@@ -339,8 +339,8 @@ var shellCmd = &cobra.Command{
 			handler := flags.StringP("handler", "h", "", "handler is the entrypoint for the function execution")
 			initializer := flags.StringP("initializer", "i", "", "initializer is the entrypoint for the initializer execution")
 			etag := flags.String("etag", "", "function etag for update")
-			environmentVariables := flags.StringArray("env", []string{}, "set environment variables")
-			environmentConfigFiles := flags.StringArray("env-file", []string{}, "read in a file of environment variables")
+			environmentVariables := flags.StringArray("env", []string{}, "set environment variables. e.g. --env VAR1=val1 --env VAR2=val2")
+			environmentConfigFiles := flags.StringArray("env-file", []string{}, "read in a file of environment variables. e.g. --env-file FILE1 --env-file FILE2")
 
 			err := flags.Parse(args)
 			if err != nil {
@@ -415,7 +415,7 @@ var shellCmd = &cobra.Command{
 				_, err = client.CreateFunction(input)
 			} else {
 				input := fc.NewUpdateFunctionInput(serviceName, functionName)
-				if flags.Changed("env") {
+				if flags.Changed("env") || flags.Changed("env-file") {
 					input.WithEnvironmentVariables(envMap)
 				}
 				if flags.Changed("description") {

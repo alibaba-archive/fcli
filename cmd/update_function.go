@@ -57,8 +57,8 @@ func init() {
 	updateFuncInput.etag = updateFuncCmd.Flags().String(
 		"etag", "", "provide etag to do the conditional update. "+
 			"If the specified etag does not match the function's, the update will fail.")
-	updateFuncInput.environmentVariables = updateFuncCmd.Flags().StringArray("env", []string{}, "set environment variables")
-	updateFuncInput.environmentConfigFiles = updateFuncCmd.Flags().StringArray("env-file", []string{}, "read in a file of environment variables")
+	updateFuncInput.environmentVariables = updateFuncCmd.Flags().StringArray("env", []string{}, "set environment variables. e.g. --env VAR1=val1 --env VAR2=val2")
+	updateFuncInput.environmentConfigFiles = updateFuncCmd.Flags().StringArray("env-file", []string{}, "read in a file of environment variables. e.g. --env-file FILE1 --env-file FILE2")
 }
 
 var updateFuncCmd = &cobra.Command{

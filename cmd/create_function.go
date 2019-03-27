@@ -55,8 +55,8 @@ func init() {
 		&createFuncInput.handler, "handler", "h", "", "handler is the entrypoint for the function execution")
 	createFuncCmd.Flags().StringVarP(
 		&createFuncInput.initializer, "initializer", "i", "", "initializer is the entrypoint for the initializer execution")
-	createFuncCmd.Flags().StringArrayVar(&createFuncInput.environmentVariables, "env", []string{}, "set environment variables")
-	createFuncCmd.Flags().StringArrayVar(&createFuncInput.environmentConfigFiles, "env-file", []string{}, "read in a file of environment variables")
+	createFuncCmd.Flags().StringArrayVar(&createFuncInput.environmentVariables, "env", []string{}, "set environment variables. e.g. --env VAR1=val1 --env VAR2=val2")
+	createFuncCmd.Flags().StringArrayVar(&createFuncInput.environmentConfigFiles, "env-file", []string{}, "read in a file of environment variables. e.g. --env-file FILE1 --env-file FILE2")
 }
 
 var createFuncCmd = &cobra.Command{
