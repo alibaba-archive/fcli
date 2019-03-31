@@ -1,9 +1,9 @@
 package cmd
 
 import (
-	"io/ioutil"
-
 	"github.com/aliyun/fc-go-sdk"
+	"io/ioutil"
+	"strings"
 
 	"fmt"
 
@@ -13,20 +13,22 @@ import (
 )
 
 type updateFuncInputType struct {
-	serviceName           *string
-	functionName          *string
-	description           *string
-	runtime               *string
-	handler               *string
-	initializer           *string
-	codeDir               *string
-	codeFile              *string
-	codeOSSBucket         *string
-	codeOSSObject         *string
-	memory                *int32
-	timeout               *int32
-	initializationTimeout *int32
-	etag                  *string
+	serviceName            *string
+	functionName           *string
+	description            *string
+	runtime                *string
+	handler                *string
+	initializer            *string
+	codeDir                *string
+	codeFile               *string
+	codeOSSBucket          *string
+	codeOSSObject          *string
+	memory                 *int32
+	timeout                *int32
+	initializationTimeout  *int32
+	etag                   *string
+	environmentVariables   *[]string
+	environmentConfigFiles *[]string
 }
 
 var updateFuncInput updateFuncInputType
@@ -55,6 +57,8 @@ func init() {
 	updateFuncInput.etag = updateFuncCmd.Flags().String(
 		"etag", "", "provide etag to do the conditional update. "+
 			"If the specified etag does not match the function's, the update will fail.")
+	updateFuncInput.environmentVariables = updateFuncCmd.Flags().StringArray("env", []string{}, "set environment variables. e.g. --env VAR1=val1 --env VAR2=val2")
+	updateFuncInput.environmentConfigFiles = updateFuncCmd.Flags().StringArray("env-file", []string{}, "read in a file of environment variables. e.g. --env-file FILE1 --env-file FILE2")
 }
 
 var updateFuncCmd = &cobra.Command{
@@ -64,6 +68,30 @@ var updateFuncCmd = &cobra.Command{
 	Long:    ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		input := fc.NewUpdateFunctionInput(*updateFuncInput.serviceName, *updateFuncInput.functionName)
+
+		envMap := make(map[string]string)
+
+		if cmd.Flags().Changed("env-file") {
+			for _, envFilePath := range *updateFuncInput.environmentConfigFiles {
+				_, err := util.GetEnvSetting(envMap, envFilePath)
+				if err != nil {
+					fmt.Printf("Error: %s\n", err)
+					return
+				}
+			}
+			input.WithEnvironmentVariables(envMap)
+		}
+
+		if cmd.Flags().Changed("env") {
+			for _, envVar := range *updateFuncInput.environmentVariables {
+				config := strings.Split(envVar, "=")
+				if len(config) == 2 {
+					envMap[config[0]] = config[1]
+				}
+			}
+			input.WithEnvironmentVariables(envMap)
+		}
+
 		if cmd.Flags().Changed("description") {
 			input.WithDescription(*updateFuncInput.description)
 		}

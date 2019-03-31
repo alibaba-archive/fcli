@@ -1,6 +1,7 @@
 package util
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
 	"github.com/aliyun/fcli/version"
@@ -485,4 +486,26 @@ func GetLocalImageDigest(name, tag string) (string, error) {
 	digest := strings.Replace(strings.TrimRight(string(res), "\n"), "'", "", -1)
 	digest = digest[strings.Index(digest, "@")+1:]
 	return digest, nil
+}
+
+// GetEnvSetting Get env setting from filePath
+func GetEnvSetting(envMap map[string]string, envFilePath string) (map[string]string, error) {
+	envFile, err := os.Open(envFilePath)
+	if err != nil {
+		return nil, err
+	}
+	defer envFile.Close()
+
+	sc := bufio.NewScanner(envFile)
+	for sc.Scan() {
+		line := sc.Text()
+		if strings.Contains(line, "#") {
+			continue
+		}
+		config := strings.Split(line, "=")
+		if len(config) == 2 {
+			envMap[config[0]] = config[1]
+		}
+	}
+	return envMap, nil
 }

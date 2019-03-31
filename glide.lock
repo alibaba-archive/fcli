@@ -1,14 +1,14 @@
 hash: ccfa479ad08397e433d854e0841acee9f32271f1e5e3abf544111c7f2266e183
-updated: 2018-12-21T10:04:51.347077+08:00
+updated: 2019-03-26T11:41:17.279774+08:00
 imports:
 - name: github.com/abiosoft/ishell
-  version: d2bd206ead0ec66d7b0f68c138a5d2f7cf600180
+  version: 8b8aa74a85127192b469453a72fd7971b47481fb
 - name: github.com/abiosoft/readline
   version: 155bce2042db95a783081fab225e74dd879055b0
 - name: github.com/aliyun/aliyun-log-go-sdk
   version: 0402edd803e987675a1f88f1cb80bfa006e7e28e
 - name: github.com/aliyun/fc-go-sdk
-  version: cf2b859441107dcac656c188641a42891a514b12
+  version: db3e654c23d6c7ce8f61bd75b70f77dec9142cda
 - name: github.com/alyu/configparser
   version: c505e6011694d3c8c1accccea3c9f57eef22afb1
 - name: github.com/denisbrodbeck/machineid
@@ -18,11 +18,9 @@ imports:
 - name: github.com/flynn-archive/go-shlex
   version: 3f9db97f856818214da2e1057f8ad84803971cff
 - name: github.com/fsnotify/fsnotify
-  version: ccc981bf80385c528a65fbfdd49bf2d8da22aa23
-- name: github.com/go-resty/resty
-  version: c45c7bcc0000d1a9ac1b119b2e6043c6540eedea
+  version: 1485a34d5d5723fea214f5710708e19a831720e4
 - name: github.com/gogo/protobuf
-  version: 4cbf7e384e768b4e01799441fdf2a706a5635ae7
+  version: 382325bbbb4d1c850eec1f3ec92a1a16f502d68b
   subpackages:
   - gogoproto
   - proto
@@ -30,7 +28,7 @@ imports:
 - name: github.com/golang/glog
   version: 23def4e6c14b4da8ac2ed8007337bc5eb5007998
 - name: github.com/golang/protobuf
-  version: 1d3f30b51784bec5aad268e59fd3c2fc1c2fe73f
+  version: d3c38a4eb4970272b87a425ae00ccc4548e2f9bb
   subpackages:
   - proto
 - name: github.com/hashicorp/hcl
@@ -50,25 +48,25 @@ imports:
 - name: github.com/kballard/go-shellquote
   version: 95032a82bc518f77982ea72343cc1ade730072f0
 - name: github.com/magiconair/properties
-  version: 7c38529aac7222391b7a2661365177a97e21b998
+  version: 7757cc9fdb852f7579b24170bcacda2c7471bb6a
 - name: github.com/mattn/go-colorable
-  version: efa589957cd060542a26d2dd7832fd6a6c6c3ade
+  version: 3a70a971f94a22f2fa562ffcc7a0eb45f5daf045
 - name: github.com/mattn/go-isatty
-  version: 3fb116b820352b7f0c281308a4d6250c22d94e27
+  version: c2a7a6ca930a4cd0bc33a3f298eb71960732a3a7
 - name: github.com/mgutz/ansi
   version: 9520e82c474b0a04dd04f8a40959027271bab992
 - name: github.com/mitchellh/mapstructure
   version: 3536a929edddb9a5b34bd6861dc4a9647cb459fe
 - name: github.com/pelletier/go-toml
-  version: 27c6b39a135b7dc87a14afb068809132fb7a9a8f
+  version: f9070d3b400d7bf7c9b4e4e05916f92fd0b79e0c
 - name: github.com/pierrec/lz4
-  version: 623b5a2f4d2a41e411730dcdfbfdaeb5c0c4564e
+  version: 062282ea0dcff40c9fb8525789eef9644b1fbd6e
   subpackages:
   - internal/xxh32
 - name: github.com/satori/go.uuid
   version: b2ce2384e17bbe0c6d34077efa39dbab3e09123b
 - name: github.com/spf13/afero
-  version: a5d6946387efe7d64d09dcba68cdd523dc1273a3
+  version: f4711e4db9e9a1d3887343acb72b2bbfc2f686f5
   subpackages:
   - mem
 - name: github.com/spf13/cast
@@ -78,33 +76,35 @@ imports:
 - name: github.com/spf13/jwalterweatherman
   version: 94f6ae3ed3bceceafa716478c5fbf8d29ca601a1
 - name: github.com/spf13/pflag
-  version: 916c5bf2d89aff6fd3e10e7811337218dfa81cb5
+  version: 24fa6976df40757dce6aea913e7b81ade90530e1
 - name: github.com/spf13/viper
   version: 6d33b5a963d922d182c91e8a1c88d81fd150cfd4
 - name: golang.org/x/net
-  version: 927f97764cc334a6575f4b7a1584a147864d5723
+  version: e3b2ff56ed879efa686c9d09ed74f9bfe42f1a1d
   subpackages:
   - publicsuffix
 - name: golang.org/x/sys
-  version: b00e65af1da0681cde6c8227839a0ca53bbf16bb
+  version: f49334f85ddcf0f08d7fb6dd7363e9e6d6b777eb
   subpackages:
   - unix
   - windows
   - windows/registry
 - name: golang.org/x/text
-  version: 17bcc049122f272a32787ba38073ee47433023e9
+  version: fe223c5a2583471b2791ca99e716c65b4a76117e
   subpackages:
   - transform
   - unicode/norm
 - name: gopkg.in/AlecAivazis/survey.v1
-  version: e205523512c83e9236698dbe7eb9649ec56e80ca
+  version: ee72c28b95a5ff3e227cfd403f556f0ef4b07ca5
   subpackages:
   - core
   - terminal
 - name: gopkg.in/h2non/gock.v1
-  version: a6029d17e101ac1594adafea9e63fd8c988a8701
+  version: ba88c4862a27596539531ce469478a91bc5a0511
 - name: gopkg.in/matryer/try.v1
   version: 312d2599e12e89ca89b52a09597394f449235d80
+- name: gopkg.in/resty.v1
+  version: fa5875c0caa5c260ab78acec5a244215a730247f
 - name: gopkg.in/yaml.v2
   version: 51d6538a90f86fe93ac480b35f37b2be17fef232
 testImports:
@@ -112,6 +112,8 @@ testImports:
   version: 04cdfd42973bb9c8589fd6a731800cf222fde1a9
   subpackages:
   - spew
+- name: github.com/h2non/parth
+  version: b4df798d65426f8c8ab5ca5f9987aec5575d26c9
 - name: github.com/pmezard/go-difflib
   version: d8ed2627bdf02c080bf22230dbb337003b7aba2d
   subpackages:
