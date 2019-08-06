@@ -4,14 +4,16 @@ import (
 	"bufio"
 	"encoding/json"
 	"fmt"
-	"github.com/aliyun/fcli/version"
 	"io"
 	"io/ioutil"
+	"net"
 	"net/http"
 	"runtime"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/aliyun/fcli/version"
 
 	"github.com/aliyun/aliyun-log-go-sdk"
 	"github.com/denisbrodbeck/machineid"
@@ -19,10 +21,11 @@ import (
 
 	"math"
 
-	"github.com/aliyun/fc-go-sdk"
-	"github.com/aliyun/fcli/ram"
 	"os"
 	"os/exec"
+
+	"github.com/aliyun/fc-go-sdk"
+	"github.com/aliyun/fcli/ram"
 )
 
 const (
@@ -508,4 +511,14 @@ func GetEnvSetting(envMap map[string]string, envFilePath string) (map[string]str
 		}
 	}
 	return envMap, nil
+}
+
+// IsFromChinaMotherland Judgment area
+func IsFromChinaMotherland() (bool, error) {
+	timeout := time.Duration(10 * time.Second)
+	_, err := net.DialTimeout("tcp", "www.google.com:443", timeout)
+	if err != nil {
+		return true, err
+	}
+	return false, nil
 }
