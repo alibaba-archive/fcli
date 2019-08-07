@@ -42,6 +42,8 @@ const (
 
 	HeaderInvocationCodeVersion = "X-Fc-Invocation-Code-Version"
 	InvocationCodeVersionLatest = "Latest"
+
+	aliyunRegistry = "registry.cn-beijing.aliyuncs.com"
 )
 
 func userConfigString() string {
@@ -1747,6 +1749,11 @@ var shellCmd = &cobra.Command{
 				}
 
 				runtimeName := supportedRuntimes[*runtime]
+				isFromChinaMotherland, _ := util.IsFromChinaMotherland()
+				if isFromChinaMotherland {
+					runtimeName = aliyunRegistry + "/" + runtimeName
+				}
+
 				runtimeQualifier := runtimeName + ":" + dockerRuntimeImageTag
 
 				// check local image
