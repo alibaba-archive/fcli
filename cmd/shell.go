@@ -1692,8 +1692,10 @@ var shellCmd = &cobra.Command{
 			"python3":   "aliyunfc/runtime-python3.6",
 			"nodejs6":   "aliyunfc/runtime-nodejs6",
 			"nodejs8":   "aliyunfc/runtime-nodejs8",
+			"nodejs10":  "aliyunfc/runtime-nodejs10",
 			"java8":     "aliyunfc/runtime-java8",
 			"php7.2":    "aliyunfc/runtime-php7.2",
+			"custom":    "aliyunfc/runtime-custom",
 		}
 
 		sbox := &ishell.Cmd{
