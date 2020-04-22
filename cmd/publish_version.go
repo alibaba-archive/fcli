@@ -25,7 +25,7 @@ func init() {
 		"etag", "", "provide etag to do the conditional publish. "+
 			"If the specified etag does not match the service's, the publish will fail.")
 	output = publishVersionCmd.Flags().Bool(
-		"output", false, "display response details")
+		"output", false, "print raw response body of API invoke.")
 }
 
 var publishServiceVersionInput fc.PublishServiceVersionInput
