@@ -15,7 +15,7 @@ import (
 
 	"github.com/aliyun/fcli/version"
 
-	"github.com/aliyun/aliyun-log-go-sdk"
+	sls "github.com/aliyun/aliyun-log-go-sdk"
 	"github.com/denisbrodbeck/machineid"
 	"github.com/spf13/viper"
 
@@ -52,6 +52,9 @@ const (
 
 	// KeyValueDelimiter defines key value delimiter of map params
 	KeyValueDelimiter = "="
+
+	// RuntimeCustomContainer const for custom-container runtime
+	RuntimeCustomContainer = "custom-container"
 )
 
 // GlobalConfig define the global configurations.

@@ -1,6 +1,7 @@
 package: github.com/aliyun/fcli
 import:
 - package: github.com/aliyun/fc-go-sdk
+  version: 0882be48e49f6c9682da173b4121d72db92924c5
 - package: github.com/alyu/configparser
 - package: github.com/spf13/cobra
 - package: gopkg.in/matryer/try.v1
@@ -9,7 +10,7 @@ import:
 - package: github.com/abiosoft/ishell
 - package: gopkg.in/yaml.v2
 - package: github.com/aliyun/aliyun-log-go-sdk
-  version: ^0.1.0
+  version: 0402edd803e987675a1f88f1cb80bfa006e7e28e
 - package: gopkg.in/AlecAivazis/survey.v1
   version: ^1.6.3
 - package: github.com/denisbrodbeck/machineid

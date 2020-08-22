@@ -10,21 +10,18 @@ import (
 	"os/exec"
 	"path"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"time"
 
-	"gopkg.in/yaml.v2"
-
 	"github.com/abiosoft/ishell"
-	"github.com/aliyun/aliyun-log-go-sdk"
-	"github.com/spf13/cobra"
-	"github.com/spf13/pflag"
-
-	"strconv"
-
+	sls "github.com/aliyun/aliyun-log-go-sdk"
 	"github.com/aliyun/fc-go-sdk"
 	"github.com/aliyun/fcli/util"
 	"github.com/aliyun/fcli/version"
+	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
+	"gopkg.in/yaml.v2"
 )
 
 type shellState struct {
@@ -343,6 +340,10 @@ var shellCmd = &cobra.Command{
 			etag := flags.String("etag", "", "function etag for update")
 			environmentVariables := flags.StringArray("env", []string{}, "set environment variables. e.g. --env VAR1=val1 --env VAR2=val2")
 			environmentConfigFiles := flags.StringArray("env-file", []string{}, "read in a file of environment variables. e.g. --env-file FILE1 --env-file FILE2")
+			customContainerImage := flags.StringP("custom-container-image", "g", "", "custom container config image")
+			customContainerCommand := flags.StringP("custom-container-command", "n", "", "custom container config command, e.g. [\"node\"]")
+			customContainerArgs := flags.StringP("custom-container-args", "r", "", "custom container config args, e.g. [\"server.js\"]")
+			caPort := flags.Int32("ca-port", 9000, "args of custom container config")
 
 			err := flags.Parse(args)
 			if err != nil {
@@ -397,23 +398,34 @@ var shellCmd = &cobra.Command{
 					WithInitializer(*initializer).
 					WithRuntime(*runtime).
 					WithEnvironmentVariables(envMap)
-				if *codeFile != "" {
-					var data []byte
-					data, err = ioutil.ReadFile(*codeFile)
-					if err != nil {
-						return err
-					}
-					input.WithCode(fc.NewCode().WithZipFile(data))
-				} else if *codeDir != "" {
-					if err == nil {
-						input.WithCode(fc.NewCode().WithDir(*codeDir))
 
-					}
+				if *runtime == util.RuntimeCustomContainer {
+					input = createFunctionInputWithCustomContainerConfig(flags, input, *customContainerImage,
+						*customContainerCommand, *customContainerArgs)
 				} else {
-					input.WithCode(fc.NewCode().
-						WithOSSBucketName(*ossBucket).
-						WithOSSObjectName(*ossObject))
+					if *codeFile != "" {
+						var data []byte
+						data, err = ioutil.ReadFile(*codeFile)
+						if err != nil {
+							return err
+						}
+						input.WithCode(fc.NewCode().WithZipFile(data))
+					} else if *codeDir != "" {
+						if err == nil {
+							input.WithCode(fc.NewCode().WithDir(*codeDir))
+
+						}
+					} else {
+						input.WithCode(fc.NewCode().
+							WithOSSBucketName(*ossBucket).
+							WithOSSObjectName(*ossObject))
+					}
 				}
+
+				if flags.Changed("ca-port") {
+					input.WithCAPort(*caPort)
+				}
+
 				_, err = client.CreateFunction(input)
 			} else {
 				input := fc.NewUpdateFunctionInput(serviceName, functionName)
@@ -462,6 +474,14 @@ var shellCmd = &cobra.Command{
 				} else {
 					return fmt.Errorf("both code bucket and object should be provided")
 				}
+
+				if flags.Changed("ca-port") {
+					input.WithCAPort(*caPort)
+				}
+
+				input = updateFunctionInputWithCustomContainerConfig(flags, input,
+					*customContainerImage, *customContainerCommand, *customContainerArgs)
+
 				_, err = client.UpdateFunction(input)
 			}
 			return err

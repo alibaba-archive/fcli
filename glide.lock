@@ -1,5 +1,5 @@
-hash: ccfa479ad08397e433d854e0841acee9f32271f1e5e3abf544111c7f2266e183
-updated: 2019-03-26T11:41:17.279774+08:00
+hash: 161954f2f5a530914e7633d14d2a93520e6695a4cbd55db48cf7deaffe8de048
+updated: 2020-08-21T02:25:19.046912557-07:00
 imports:
 - name: github.com/abiosoft/ishell
   version: 8b8aa74a85127192b469453a72fd7971b47481fb
@@ -8,7 +8,7 @@ imports:
 - name: github.com/aliyun/aliyun-log-go-sdk
   version: 0402edd803e987675a1f88f1cb80bfa006e7e28e
 - name: github.com/aliyun/fc-go-sdk
-  version: db3e654c23d6c7ce8f61bd75b70f77dec9142cda
+  version: 0882be48e49f6c9682da173b4121d72db92924c5
 - name: github.com/alyu/configparser
   version: c505e6011694d3c8c1accccea3c9f57eef22afb1
 - name: github.com/denisbrodbeck/machineid
@@ -95,12 +95,12 @@ imports:
   - transform
   - unicode/norm
 - name: gopkg.in/AlecAivazis/survey.v1
-  version: ee72c28b95a5ff3e227cfd403f556f0ef4b07ca5
+  version: da50ccef2fd74048e26b7846a731da4254035115
   subpackages:
   - core
   - terminal
 - name: gopkg.in/h2non/gock.v1
-  version: ba88c4862a27596539531ce469478a91bc5a0511
+  version: 3ffff9b1aa8200275a5eb219c5f9c62bd27acb31
 - name: gopkg.in/matryer/try.v1
   version: 312d2599e12e89ca89b52a09597394f449235d80
 - name: gopkg.in/resty.v1

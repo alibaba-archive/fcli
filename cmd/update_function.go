@@ -1,15 +1,15 @@
 package cmd
 
 import (
-	"github.com/aliyun/fc-go-sdk"
+	"fmt"
 	"io/ioutil"
 	"strings"
 
-	"fmt"
+	"github.com/spf13/pflag"
 
-	"github.com/spf13/cobra"
-
+	"github.com/aliyun/fc-go-sdk"
 	"github.com/aliyun/fcli/util"
+	"github.com/spf13/cobra"
 )
 
 type updateFuncInputType struct {
@@ -29,6 +29,10 @@ type updateFuncInputType struct {
 	etag                   *string
 	environmentVariables   *[]string
 	environmentConfigFiles *[]string
+	customContainerImage   *string
+	customContainerCommand *string
+	customContainerArgs    *string
+	caPort                 *int32
 }
 
 var updateFuncInput updateFuncInputType
@@ -48,6 +52,11 @@ func init() {
 	updateFuncInput.memory = updateFuncCmd.Flags().Int32P("memory", "m", 0, "memory size in MB")
 	updateFuncInput.codeOSSBucket = updateFuncCmd.Flags().StringP("bucket", "b", "", "oss code bucket")
 	updateFuncInput.codeOSSObject = updateFuncCmd.Flags().StringP("object", "o", "", "oss code object")
+	updateFuncInput.customContainerImage = updateFuncCmd.Flags().StringP("custom-container-image", "g", "", "custom container config image")
+	updateFuncInput.customContainerCommand = updateFuncCmd.Flags().StringP("custom-container-command", "n", "", "custom container config command, e.g. [\"node\"]")
+	updateFuncInput.customContainerArgs = updateFuncCmd.Flags().StringP("custom-container-args", "r", "", "custom container config args, e.g. [\"server.js\"]")
+	updateFuncInput.caPort = updateFuncCmd.Flags().Int32("ca-port", 9000, "args of custom container config")
+
 	updateFuncInput.codeDir = updateFuncCmd.Flags().String(
 		"code-dir", "", "function code directory. If both code-file and code-dir are provided, "+
 			"code-file will be used.")
@@ -131,6 +140,13 @@ var updateFuncCmd = &cobra.Command{
 				WithOSSObjectName(*updateFuncInput.codeOSSObject))
 		}
 
+		if cmd.Flags().Changed("ca-port") {
+			input.WithCAPort(*updateFuncInput.caPort)
+		}
+
+		input = updateFunctionInputWithCustomContainerConfig(cmd.Flags(), input, *updateFuncInput.customContainerImage,
+			*updateFuncInput.customContainerCommand, *updateFuncInput.customContainerArgs)
+
 		client, err := util.NewFClient(gConfig)
 		if err != nil {
 			fmt.Printf("Error: can not create fc client: %s\n", err)
@@ -141,4 +157,19 @@ var updateFuncCmd = &cobra.Command{
 			fmt.Printf("Error: %s\n", err)
 		}
 	},
+}
+
+func updateFunctionInputWithCustomContainerConfig(flags *pflag.FlagSet, input *fc.UpdateFunctionInput, image, command, args string) *fc.UpdateFunctionInput {
+	if flags.Changed("custom-container-image") {
+		input.WithCustomContainerConfig(fc.NewCustomContainerConfig().
+			WithImage(image))
+		if flags.Changed("custom-container-command") {
+			input.CustomContainerConfig.WithCommand(command)
+		}
+		if flags.Changed("custom-container-args") {
+			input.CustomContainerConfig.WithArgs(args)
+		}
+	}
+
+	return input
 }
