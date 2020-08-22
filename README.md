@@ -52,6 +52,12 @@ $ go install github.com/Masterminds/glide
 __4. 安装依赖__
 在项目根目录下，执行 `glide i -v` 进行依赖安装
 
+__5. 构建 fcli 二进制__
+```
+$ go get github.com/karalabe/xgo
+$ make binary
+```
+
 ### 提交 pull request
 
 __1. 将修改 push 到个人账号里的本地仓库__

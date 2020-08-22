@@ -2,13 +2,13 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/aliyun/fc-go-sdk"
 	"io/ioutil"
 	"strings"
 
-	"github.com/spf13/cobra"
-
+	"github.com/aliyun/fc-go-sdk"
 	"github.com/aliyun/fcli/util"
+	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 )
 
 type createFuncInputType struct {
@@ -22,6 +22,10 @@ type createFuncInputType struct {
 	codeFile               string
 	codeOSSBucket          string
 	codeOSSObject          string
+	customContainerImage   string
+	customContainerCommand string
+	customContainerArgs    string
+	caPort                 int32
 	memory                 int32
 	timeout                int32
 	initializationTimeout  int32
@@ -44,6 +48,11 @@ func init() {
 	createFuncCmd.Flags().Int32VarP(&createFuncInput.initializationTimeout, "initializationTimeout", "e", 30, "timeout in seconds")
 	createFuncCmd.Flags().StringVarP(&createFuncInput.codeOSSBucket, "code-bucket", "b", "", "oss bucket of the code")
 	createFuncCmd.Flags().StringVarP(&createFuncInput.codeOSSObject, "code-object", "o", "", "oss object of the code")
+	createFuncCmd.Flags().StringVarP(&createFuncInput.customContainerImage, "custom-container-image", "g", "", "custom container config image")
+	createFuncCmd.Flags().StringVarP(&createFuncInput.customContainerCommand, "custom-container-command", "n", "", "custom container config command, e.g. [\"node\"]")
+	createFuncCmd.Flags().StringVarP(&createFuncInput.customContainerArgs, "custom-container-args", "r", "", "custom container config args, e.g. [\"server.js\"]")
+	createFuncCmd.Flags().Int32Var(&createFuncInput.caPort, "ca-port", 0, "args of custom container config")
+
 	createFuncCmd.Flags().StringVarP(
 		&createFuncInput.codeDir, "code-dir", "d", "",
 		"function code directory. If both code-file and code-dir are provided, code-file will be used.")
@@ -98,20 +107,29 @@ var createFuncCmd = &cobra.Command{
 			input.WithEnvironmentVariables(envMap)
 		}
 
-		if createFuncInput.codeFile != "" {
-			var data []byte
-			data, err := ioutil.ReadFile(createFuncInput.codeFile)
-			if err != nil {
-				fmt.Printf("Error: %s\n", err)
-				return
-			}
-			input.WithCode(fc.NewCode().WithZipFile(data))
-		} else if createFuncInput.codeDir != "" {
-			input.WithCode(fc.NewCode().WithDir(createFuncInput.codeDir))
+		if createFuncInput.runtime == util.RuntimeCustomContainer {
+			input = createFunctionInputWithCustomContainerConfig(cmd.Flags(), input, createFuncInput.customContainerImage,
+				createFuncInput.customContainerCommand, createFuncInput.customContainerArgs)
 		} else {
-			input.WithCode(fc.NewCode().
-				WithOSSBucketName(createFuncInput.codeOSSBucket).
-				WithOSSObjectName(createFuncInput.codeOSSObject))
+			if createFuncInput.codeFile != "" {
+				var data []byte
+				data, err := ioutil.ReadFile(createFuncInput.codeFile)
+				if err != nil {
+					fmt.Printf("Error: %s\n", err)
+					return
+				}
+				input.WithCode(fc.NewCode().WithZipFile(data))
+			} else if createFuncInput.codeDir != "" {
+				input.WithCode(fc.NewCode().WithDir(createFuncInput.codeDir))
+			} else {
+				input.WithCode(fc.NewCode().
+					WithOSSBucketName(createFuncInput.codeOSSBucket).
+					WithOSSObjectName(createFuncInput.codeOSSObject))
+			}
+		}
+
+		if cmd.Flags().Changed("ca-port") {
+			input.WithCAPort(createFuncInput.caPort)
 		}
 
 		client, err := util.NewFClient(gConfig)
@@ -124,4 +142,20 @@ var createFuncCmd = &cobra.Command{
 			fmt.Printf("Error: %s\n", err)
 		}
 	},
+}
+
+func createFunctionInputWithCustomContainerConfig(flags *pflag.FlagSet, input *fc.CreateFunctionInput,
+	image, command, args string) *fc.CreateFunctionInput {
+	if flags.Changed("custom-container-image") {
+		input.WithCustomContainerConfig(fc.NewCustomContainerConfig().
+			WithImage(image))
+		if flags.Changed("custom-container-command") {
+			input.CustomContainerConfig.WithCommand(command)
+		}
+		if flags.Changed("custom-container-args") {
+			input.CustomContainerConfig.WithArgs(args)
+		}
+	}
+
+	return input
 }
